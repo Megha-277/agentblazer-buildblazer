@@ -364,48 +364,52 @@ $("#emblem").innerHTML=`
 /* ============================================================
    SPLASH — looping intro video
    ============================================================ */
-const splash = $("#splash"), splashVideo = $("#splash-video");
-let splashOn = true;
+const splash=$("#splash"),splashVideo=$("#splash-video");
+let splashOn=true;
+const reduceMotion=matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // Loop boundary timestamps in seconds based on video length
-const PHOENIX_LOOP_START = 5.0; // Eyes disappear at 0:05
-const PHOENIX_LOOP_END = 9.9;   // Jump back right before full end at 0:10 to prevent hitching
+const PHOENIX_LOOP_START=5.0; // Eyes disappear at 0:05
+const PHOENIX_LOOP_END=9.9;   // Jump back right before full end at 0:10 to prevent hitching
 
-if (splashVideo) {
-  const tryPlay = () => splashVideo.play().catch(() => {});
+if(splashVideo && !reduceMotion){
+  // Autoplay can be blocked until the user interacts; retry play on first touch/click.
+  const tryPlay=()=>splashVideo.play().catch(()=>{});
   tryPlay();
-  splash.addEventListener("pointerdown", tryPlay, { once: true });
+  splash.addEventListener("pointerdown",tryPlay,{once:true});
 
-  let introFinished = false;
+  // iOS/Android can pause background video on tab switch or orientation change —
+  // resume so the loop keeps running instead of freezing on a single frame.
+  document.addEventListener("visibilitychange",()=>{
+    if(!document.hidden && splashOn) tryPlay();
+  });
+
+  let introFinished=false;
 
   // Track playback time to loop only the phoenix portion
-  splashVideo.addEventListener("timeupdate", () => {
-    if (splashVideo.currentTime >= PHOENIX_LOOP_START) {
-      introFinished = true;
+  splashVideo.addEventListener("timeupdate",()=>{
+    if(splashVideo.currentTime>=PHOENIX_LOOP_START){
+      introFinished=true;
     }
 
     // Once it hits the end of the video, seek back to 0:05
-    if (introFinished && splashVideo.currentTime >= PHOENIX_LOOP_END) {
-      splashVideo.currentTime = PHOENIX_LOOP_START;
+    if(introFinished && splashVideo.currentTime>=PHOENIX_LOOP_END){
+      splashVideo.currentTime=PHOENIX_LOOP_START;
       splashVideo.play();
     }
   });
 }
+// When reduced motion is on, #splash-video is display:none (see CSS) and
+// #splash shows the static poster image instead — no playback started at all.
 
-function enter() {
-  if (!splashOn) return;
-  splashOn = false;
+function enter(){
+  if(!splashOn)return;
+  splashOn=false;
   splash.classList.add("gone");
   $("#app").classList.add("on");
-  if (splashVideo) { splashVideo.pause(); }
-  setTimeout(() => { splash.remove(); }, 1000);
+  if(splashVideo){splashVideo.pause();}
+  setTimeout(()=>{splash.remove();},1000);
 }
-
-splash.addEventListener("click", enter);
-splash.addEventListener("keydown", e => {
-  if (e.key === "Enter" || e.key === " ") {
-    e.preventDefault();
-    enter();
-  }
-});
+splash.addEventListener("click",enter);
+splash.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();enter();}});
 splash.focus?.();
