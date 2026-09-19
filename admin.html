@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="violet">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dashboard — AgentBlazer Club Admin</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:ital,wght@0,500;0,600;1,400;1,500;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body class="a-body">
+
+<div class="ambient" aria-hidden="true"></div>
+
+<header class="a-top">
+  <div class="a-wrap a-top-in">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 2.3 20.5 7v10L12 21.7 3.5 17V7L12 2.3Z" stroke="url(#ag1)" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M12 7.2 16.6 9.8v5.2L12 17.6 7.4 15V9.8L12 7.2Z" fill="url(#ag2)" opacity=".55"/>
+          <circle cx="12" cy="12.4" r="1.9" fill="#fff"/>
+          <defs>
+            <linearGradient id="ag1" x1="3" y1="2" x2="21" y2="22"><stop stop-color="#2ee6d6"/><stop offset="1" stop-color="#a855f7"/></linearGradient>
+            <linearGradient id="ag2" x1="7" y1="7" x2="17" y2="18"><stop stop-color="#38bdf8"/><stop offset="1" stop-color="#a855f7"/></linearGradient>
+          </defs>
+        </svg>
+      </span>
+      <span>
+        <span class="brand-name">Agent<span class="grad">Blazer</span><em>dashboard</em></span>
+        <span class="brand-sub">Content manager · No coding needed</span>
+      </span>
+    </a>
+
+    <div class="themes" role="group" aria-label="Colour theme">
+      <button class="on" data-theme="violet" aria-pressed="true"><i>⚡</i><span>Violet</span></button>
+      <button data-theme="inferno" aria-pressed="false"><i>🔥</i><span>Inferno</span></button>
+      <button data-theme="frost" aria-pressed="false"><i>❄️</i><span>Frost</span></button>
+    </div>
+
+    <div class="a-who">
+      <span class="ini" id="who-ini">CA</span>
+      <span><b id="who-name">Club Administrator</b>signed in</span>
+    </div>
+
+    <button class="a-mini danger" id="logout">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      Log out
+    </button>
+  </div>
+</header>
+
+<div class="a-wrap a-main">
+
+  <aside class="a-side">
+    <nav id="tabs" aria-label="Content sections">
+      <button class="on" data-sec="events">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 11h18"/></svg>
+        Events <span class="n" data-count="events">0</span>
+      </button>
+      <button data-sec="officers">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>
+        Core team <span class="n" data-count="officers">0</span>
+      </button>
+      <button data-sec="committee">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 11h-6"/></svg>
+        Working committee <span class="n" data-count="committee">0</span>
+      </button>
+      <button data-sec="faculty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5"/></svg>
+        Faculty <span class="n" data-count="faculty">0</span>
+      </button>
+      <button data-sec="guests">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6L12 16.8 6.6 19.6l1.2-6L3.3 9.4l6.1-.8L12 3Z"/></svg>
+        Guests of honour <span class="n" data-count="guests">0</span>
+      </button>
+      <button data-sec="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2V21a2 2 0 1 1-4 0v-.1A1.7 1.7 0 0 0 7 19.4a1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0-1.2-2.9H1a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 2.6 7a1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.7 1.7 0 0 0 7 2.6h.1A1.7 1.7 0 0 0 8.3 1V1a2 2 0 1 1 4 0" transform="scale(.86) translate(2 2)"/></svg>
+        Settings
+      </button>
+    </nav>
+
+    <div class="a-tools">
+      <h5>Your content</h5>
+      <a class="a-mini" href="index.html" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>
+        Open the live site
+      </a>
+      <button class="a-mini" id="backup">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Download backup
+      </button>
+      <button class="a-mini" id="restore">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+        Restore from backup
+      </button>
+      <button class="a-mini danger" id="factory">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+        Reset to original content
+      </button>
+      <input type="file" id="file" accept="application/json,.json" hidden>
+    </div>
+  </aside>
+
+  <main>
+    <!-- EVENTS -->
+    <section class="a-sec on" id="sec-events">
+      <div class="a-head">
+        <div>
+          <h2>Events <em>&amp; workshops</em></h2>
+          <p>Everything here appears on the Events page of the site, in the order shown below.</p>
+        </div>
+        <button class="btn btn-1" data-add="events">Add an event</button>
+      </div>
+      <div class="a-list" id="list-events"></div>
+    </section>
+
+    <!-- OFFICERS -->
+    <section class="a-sec" id="sec-officers">
+      <div class="a-head">
+        <div>
+          <h2>Student core team <em>&amp; officers</em></h2>
+          <p>The large leadership cards on the About page.</p>
+        </div>
+        <button class="btn btn-1" data-add="officers">Add a member</button>
+      </div>
+      <div class="a-list" id="list-officers"></div>
+    </section>
+
+    <!-- COMMITTEE -->
+    <section class="a-sec" id="sec-committee">
+      <div class="a-head">
+        <div>
+          <h2>Core working <em>committee</em></h2>
+          <p>The compact list of departmental representatives under the core team.</p>
+        </div>
+        <button class="btn btn-1" data-add="committee">Add a member</button>
+      </div>
+      <div class="a-list" id="list-committee"></div>
+    </section>
+
+    <!-- FACULTY -->
+    <section class="a-sec" id="sec-faculty">
+      <div class="a-head">
+        <div>
+          <h2>Faculty <em>advisory council</em></h2>
+          <p>Teaching staff who guide the club.</p>
+        </div>
+        <button class="btn btn-1" data-add="faculty">Add a coordinator</button>
+      </div>
+      <div class="a-list" id="list-faculty"></div>
+    </section>
+
+    <!-- GUESTS -->
+    <section class="a-sec" id="sec-guests">
+      <div class="a-head">
+        <div>
+          <h2>Honoured guests <em>&amp; leadership</em></h2>
+          <p>Speakers and college leadership shown at the top of the About page.</p>
+        </div>
+        <button class="btn btn-1" data-add="guests">Add a guest</button>
+      </div>
+      <div class="a-list" id="list-guests"></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="a-sec" id="sec-settings">
+      <div class="a-head">
+        <div>
+          <h2>Your <em>sign-in details</em></h2>
+          <p>Change the username and password used to open this dashboard.</p>
+        </div>
+      </div>
+      <div class="a-panel">
+        <div class="a-alert" id="set-err" role="alert"></div>
+        <div class="f">
+          <label for="set-name">Display name</label>
+          <input id="set-name" type="text" placeholder="Club Administrator">
+        </div>
+        <div class="f">
+          <label for="set-user">Username</label>
+          <input id="set-user" type="text" autocomplete="username">
+        </div>
+        <div class="f">
+          <label for="set-old">Current password</label>
+          <div class="f-pw"><input id="set-old" type="password" autocomplete="current-password" placeholder="Required to save changes"></div>
+        </div>
+        <div class="f">
+          <label for="set-new">New password</label>
+          <div class="f-pw"><input id="set-new" type="password" autocomplete="new-password" placeholder="Leave blank to keep the current one"></div>
+          <span class="help">Use at least 8 characters. Write it down somewhere safe — nobody can recover it for you.</span>
+        </div>
+        <div class="f">
+          <label for="set-new2">Repeat new password</label>
+          <div class="f-pw"><input id="set-new2" type="password" autocomplete="new-password"></div>
+        </div>
+        <button class="btn btn-1" id="set-save" style="justify-content:center">Save sign-in details</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- editor -->
+<div class="a-scrim" id="scrim"></div>
+<aside class="a-sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+  <div class="a-sheet-h">
+    <div><b id="sheet-kind">Event</b><h3 id="sheet-title">Add an event</h3></div>
+    <button class="a-ico" id="sheet-x" aria-label="Close editor">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="a-sheet-b" id="sheet-body"></div>
+  <div class="a-sheet-f">
+    <button class="btn btn-2" id="sheet-cancel">Cancel</button>
+    <button class="btn btn-1" id="sheet-save">Save</button>
+  </div>
+</aside>
+
+<div class="a-toast" id="toast" role="status" aria-live="polite"><i></i><span></span></div>
+
+<script src="data.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

@@ -1,70 +1,22 @@
 /* ============================================================
-   DATA
+   DATA  — now loaded from data.js (editable in admin.html)
    ============================================================ */
-const GUESTS=[
-  {n:"Mr. Santosh Rebello",o:"Salesforce",l:"Guest of Honor",r:"Keynote Speaker",c:"t3"},
-  {n:"Mr. Stephen Pinto",o:"Salesforce &amp; SJEC Alumnus",l:"Technical Mentor",r:"Alumni Guide",c:"t1"},
-  {n:"Dr. Rio D’Souza",o:"Principal, SJEC",l:"Presidential Address",r:"Patron",c:"t2"},
-  {n:"Dr. Melwyn D’Souza",o:"HOD, Computer Science &amp; Engg",l:"Program Chair",r:"Department Head",c:"t4"}
-];
-const FACULTY=[
-  {n:"Ms. Nisha Roche",o:"Assistant Professor, CSE · Faculty Coordinator",tag:"Faculty",ph:"NR"},
-  {n:"Mr. Keith Fernandes",o:"Assistant Professor, CSE · Faculty Coordinator",tag:"Faculty",ph:"KF"}
-];
-const OFFICERS=[
-  {n:"Ruben Saldanha",k:"Executive President",c:"t2",role:"President",d:"Guiding club vision, university collaborations, and strategic workshop series."},
-  {n:"Ajay Preenal Dsouza",k:"Executive Vice President",c:"t2",role:"Vice President",d:"Coordinating student mentorship, event operations, and community growth."},
-  {n:"Stevin Dsouza",k:"Technical Direction",c:"t1",role:"Tech Lead",d:"Technical architectures, hands-on lab environments, and repository supervision."},
-  {n:"Frenny Chrystal Saldanha",k:"Operations &amp; Logistics",c:"t3",role:"Resource Head",d:"Managing cloud compute budgets, venue infrastructure, and participant toolkits."},
-  {n:"Joyline Galbao",k:"Administration",c:"t2",role:"Secretary",d:"Documentation, accreditation reporting, meeting minutes, and member onboarding."},
-  {n:"Chinthan N V",k:"Creative Outreach",c:"t4",role:"Media Head",d:"Brand storytelling, photo documentation, visual design, and social publications."}
-];
-const COMMITTEE=[
-  {n:"Prajwal Royston Cordiero",o:"AI &amp; LLM Research Group"},
-  {n:"Chacko P Abraham",o:"Model Evaluation Benchmarks"},
-  {n:"Alma Roxane Pereira",o:"Project Operations &amp; Labs"}
-];
-const EVENTS=[
-  {d:"February 14, 2026",k:"Flagship Masterclass",c:"t1",
-   t:"Master the Future: A Hands-on GSoC &amp; LLMs Workshop",
-   p:"Practical masterclass on open-source Git PR workflows, Retrieval-Augmented Generation (RAG), Gemini AI, LangChain, LlamaIndex, CrewAI, and live Gradio prototyping.",
-   f:"80 Shortlisted Students",
-   g:{label:"Guest speaker: Anas Khan",n:8,cap:"Master the Future: GSoC &amp; LLMs",sub:"Anas Khan · Google DeepMind GSoC Alumni",date:"Feb 14, 2026"}},
-  {d:"March 25, 2026",k:"Live Contest",c:"t2",
-   t:"PROMPT OPS-2K26 Challenge",
-   tracks:["Track 1: 1st Year Engineers","Track 2: 2nd Year Engineers"],
-   p:"Fast-paced prompt engineering hackathon featuring automated test suites, iterative refinement, teamwork, and live algorithmic problem solving.",
-   f:"10 Contest Photos",
-   g:{label:"Contest gallery",n:10,cap:"PROMPT OPS-2K26 Challenge",sub:"CSE Department · AgentBlazer Club",date:"Mar 25, 2026"}},
-  {d:"August 25, 2025",k:"Symposium Keynote",c:"t2",
-   t:"Agentforce Technical Deep-Dive",
-   p:"Guiding undergraduate engineers from prompt prediction to autonomous agentic architectures, Salesforce Data Cloud integration, and real-time enterprise workflows.",
-   note:"Inaugural Technical Session",f:"CSE Auditorium",
-   g:{label:"Guest speaker: Mr. Suhas Nayak",n:3,cap:"Agentforce Technical Deep-Dive",sub:"Inaugural symposium · CSE Auditorium",date:"Aug 25, 2025"}},
-  {d:"March 18, 2026",k:"Student Lab",c:"t2",
-   t:"Demystifying Generative Models",
-   note:"Session Leads: Prajwal Royston Cordiero &amp; Chacko P Abraham",
-   p:"Exploring Transformer mechanics, multi-agent consensus networks, and comparative latency benchmarks of LLaMA, Groq, and Mistral architectures.",
-   hint:"Hands-on Code Walkthrough",f:"Systems Lab",
-   g:{label:"Student lab gallery",n:5,cap:"Demystifying Generative Models",sub:"VI Sem CSE Cohort · Systems Lab",date:"Mar 18, 2026"}},
-  {d:"April 01, 2026",k:"Security Workshop",c:"t1",
-   t:"Cyber Security &amp; Career Pathways",
-   p:"Interactive demonstrations covering Shodan discovery, OSINT methods, CVE vulnerability analysis, SQL injection scenarios, and the Cyber Kill Chain.",
-   f:"IV Sem CSE Cohort",
-   g:{label:"Session gallery",n:6,cap:"Cyber Security &amp; Career Pathways",sub:"Mr. Srinav Nayak · Sen Dev Lead, AgentForce",date:"Apr 01, 2026"}},
-  {d:"May 22, 2026",k:"Developer Lab",c:"t3",
-   t:"Hands-on Agentforce &amp; AI Agents",
-   note:"Platform: Salesforce Developer Sandbox",
-   p:"Applied development lab creating Flex Prompts, dynamic contextual Sales Email templates, and autonomous event triggers within modern CRM pipelines.",
-   hint:"Guided Practical Exercises",f:"Cloud Computing Lab",
-   g:{label:"Developer lab gallery",n:4,cap:"Hands-on Agentforce &amp; AI Agents",sub:"Salesforce Developer Sandbox",date:"May 22, 2026"}}
-];
+const CONTENT  = window.AB ? AB.load() : { guests: [], faculty: [], officers: [], committee: [], events: [] };
+const GUESTS   = CONTENT.guests;
+const FACULTY  = CONTENT.faculty;
+const OFFICERS = CONTENT.officers;
+const COMMITTEE= CONTENT.committee;
+const EVENTS   = CONTENT.events;
 
-/* --------- placeholder portrait generator (swap for real photos) --------- */
+const ACCENT={t1:"a1",t2:"a2",t3:"a3",t4:"a4"};
+const accent=c=>`var(--${ACCENT[c]||"a1"})`;
+const esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+
+/* --------- placeholder portrait generator (used when no photo is set) --------- */
 const PALETTES=[["#123a2e","#2f6f52"],["#1b2b4d","#3d5d8a"],["#3a1f4d","#6b4a8f"],["#4d3a1f","#8a6b3d"],["#1f3f4d","#3d7a8a"],["#4d1f2e","#8a3d55"]];
 function portrait(name,i){
   const [a,b]=PALETTES[i%PALETTES.length];
-  const ini=name.replace(/&[a-z]+;/g,"").split(" ").filter(Boolean).slice(0,2).map(w=>w[0]).join("");
+  const ini=String(name).split(" ").filter(Boolean).slice(0,2).map(w=>w[0]).join("");
   const s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500">
   <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs>
   <rect width="400" height="500" fill="url(#g)"/>
@@ -72,7 +24,9 @@ function portrait(name,i){
   <text x="200" y="470" text-anchor="middle" font-family="sans-serif" font-size="30" font-weight="700" fill="rgba(255,255,255,.34)" letter-spacing="6">${ini}</text></svg>`;
   return "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(s);
 }
-function galleryShot(i,seed){
+function photoOf(p,i){return p.photo?p.photo:portrait(p.name,i)}
+
+function placeholderShot(i,seed){
   const hues=[188,265,32,150,320,210];const h=hues[(i+seed)%hues.length];
   const s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
   <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl(${h},42%,22%)"/><stop offset="1" stop-color="hsl(${(h+40)%360},48%,34%)"/></linearGradient></defs>
@@ -84,7 +38,11 @@ function galleryShot(i,seed){
   <text x="200" y="285" text-anchor="middle" font-family="sans-serif" font-size="15" fill="rgba(255,255,255,.4)">Event photo ${i+1}</text></svg>`;
   return "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(s);
 }
-function initials(n){return n.replace(/&[a-z]+;/g,"").replace(/[^A-Za-z ]/g,"").split(" ").filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join("")}
+/* real photos when the admin has added links, placeholders otherwise */
+function shotCount(e){const g=e.gallery||{};return (g.images&&g.images.length)?g.images.length:Math.max(1,+g.count||1)}
+function galleryShot(e,i,seed){const g=e.gallery||{};return (g.images&&g.images.length)?g.images[i%g.images.length]:placeholderShot(i,seed)}
+
+function initials(n){return String(n).replace(/[^A-Za-z ]/g,"").split(" ").filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join("")}
 
 /* ============================================================
    RENDER
@@ -94,40 +52,40 @@ const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelect
 $("#guests").innerHTML=GUESTS.map(g=>`
   <article class="person glass tilt">
     <div class="person-top">
-      <span class="ini">${initials(g.n)}</span>
-      <div><h3>${g.n}</h3><p class="role">${g.o}</p></div>
+      <span class="ini">${initials(g.name)}</span>
+      <div><h3>${esc(g.name)}</h3><p class="role">${esc(g.org)}</p></div>
     </div>
-    <div class="person-foot"><span>${g.l}</span><b class="${g.c==="t1"?"":""}" style="color:var(--${g.c==="t1"?"a1":g.c==="t2"?"a2":g.c==="t3"?"a3":"a4"})">${g.r}</b></div>
+    <div class="person-foot"><span>${esc(g.left)}</span><b style="color:${accent(g.color)}">${esc(g.right)}</b></div>
   </article>`).join("");
 
 $("#faculty").innerHTML=FACULTY.map((f,i)=>`
-  <article class="fac glass" data-pop="portrait" data-name="${f.n}" data-role="${f.o}" data-tag="Faculty" data-img="${portrait(f.n,i+4)}">
-    <span class="ini">${initials(f.n)}</span>
-    <div><h4>${f.n}</h4><p>${f.o}</p></div>
+  <article class="fac glass" data-pop="portrait" data-name="${esc(f.name)}" data-role="${esc(f.role)}" data-tag="Faculty" data-img="${esc(photoOf(f,i+4))}">
+    <span class="ini">${initials(f.name)}</span>
+    <div><h4>${esc(f.name)}</h4><p>${esc(f.role)}</p></div>
     <span class="mini">Portrait view</span>
   </article>`).join("");
 
 $("#officers").innerHTML=OFFICERS.map((o,i)=>`
-  <article class="off glass" data-pop="portrait" data-name="${o.n}" data-role="${o.role} · AgentBlazer Club" data-tag="Leadership" data-img="${portrait(o.n,i)}">
+  <article class="off glass" data-pop="portrait" data-name="${esc(o.name)}" data-role="${esc(o.role)} · AgentBlazer Club" data-tag="Leadership" data-img="${esc(photoOf(o,i))}">
     <span class="fill"></span>
-    <span class="tag ${o.c}">${o.k}</span>
-    <h3>${o.n}</h3>
-    <span class="badge ${o.c==="t1"?"":""}" style="color:var(--${o.c==="t1"?"a1":o.c==="t2"?"a1":o.c==="t3"?"a3":"a1"})">${o.role}</span>
-    <p>${o.d}</p>
+    <span class="tag ${o.color||"t1"}">${esc(o.badge)}</span>
+    <h3>${esc(o.name)}</h3>
+    <span class="badge" style="color:${accent(o.color)}">${esc(o.role)}</span>
+    <p>${esc(o.desc)}</p>
   </article>`).join("");
 
 $("#committee").innerHTML=COMMITTEE.map(c=>`
-  <div class="cm glass"><span class="ini">${initials(c.n)}</span><div><h4>${c.n}</h4><p>${c.o}</p></div></div>`).join("");
+  <div class="cm glass"><span class="ini">${initials(c.name)}</span><div><h4>${esc(c.name)}</h4><p>${esc(c.role)}</p></div></div>`).join("");
 
 $("#events").innerHTML=EVENTS.map((e,i)=>`
   <article class="ev glass" data-pop="gallery" data-i="${i}">
     <span class="fill"></span>
-    <div class="ev-top"><span class="ev-date">${e.d}</span><span class="kind" style="color:var(--${e.c==="t1"?"a1":e.c==="t2"?"a2":e.c==="t3"?"a3":"a4"})">${e.k}</span></div>
-    <h3>${e.t}</h3>
-    ${e.tracks?`<div class="tracks">${e.tracks.map(t=>`<span>${t}</span>`).join("")}</div>`:""}
-    ${e.note?`<p class="note">${e.note}</p>`:""}
-    <p>${e.p}</p>
-    <div class="ev-foot"><span class="hint"><i></i>${e.hint||"Hover to inspect gallery"}</span><b>${e.f}</b></div>
+    <div class="ev-top"><span class="ev-date">${esc(e.date)}</span><span class="kind" style="color:${accent(e.color)}">${esc(e.kind)}</span></div>
+    <h3>${esc(e.title)}</h3>
+    ${(e.tracks&&e.tracks.length)?`<div class="tracks">${e.tracks.map(t=>`<span>${esc(t)}</span>`).join("")}</div>`:""}
+    ${e.note?`<p class="note">${esc(e.note)}</p>`:""}
+    <p>${esc(e.desc)}</p>
+    <div class="ev-foot"><span class="hint"><i></i>${esc(e.hint||"Hover to inspect gallery")}</span><b>${esc(e.foot)}</b></div>
   </article>`).join("");
 
 /* ============================================================
@@ -181,24 +139,25 @@ function placePop(el){
 }
 function portraitPop(el){
   pop.className="pop";
-  pop.innerHTML=`<div class="pop-media"><img alt="${el.dataset.name}" src="${el.dataset.img}">
-    <span class="pop-tag">${el.dataset.tag}</span><span class="pop-org">SJEC CSE</span></div>
-    <div class="pop-body"><h4>${el.dataset.name}</h4><p>${el.dataset.role}</p></div>`;
+  pop.innerHTML=`<div class="pop-media"><img alt="${esc(el.dataset.name)}" src="${el.dataset.img}">
+    <span class="pop-tag">${esc(el.dataset.tag)}</span><span class="pop-org">SJEC CSE</span></div>
+    <div class="pop-body"><h4>${esc(el.dataset.name)}</h4><p>${esc(el.dataset.role)}</p></div>`;
   placePop(el);requestAnimationFrame(()=>{placePop(el);pop.classList.add("on")});
 }
 function galleryPop(el){
-  const e=EVENTS[+el.dataset.i],n=e.g.n;let idx=0;
+  const seed=+el.dataset.i, e=EVENTS[seed], g=e.gallery||{}, n=shotCount(e);let idx=0;
   pop.className="pop wide";
-  pop.innerHTML=`<div class="pop-head"><b><i></i>${e.g.label}</b><span id="pc">1 / ${n}</span></div>
-    <div class="pop-media"><img id="pi" alt="${e.g.cap}" src="${galleryShot(0,+el.dataset.i)}"></div>
-    <div class="pop-cap"><b>${e.g.cap}<i>${e.g.date}</i></b><span>${e.g.sub}</span></div>`;
+  pop.innerHTML=`<div class="pop-head"><b><i></i>${esc(g.label||"Gallery")}</b><span id="pc">1 / ${n}</span></div>
+    <div class="pop-media"><img id="pi" alt="${esc(g.caption||e.title)}" src="${galleryShot(e,0,seed)}"></div>
+    <div class="pop-cap"><b>${esc(g.caption||e.title)}<i>${esc(g.date||e.date)}</i></b><span>${esc(g.sub||"")}</span></div>`;
   placePop(el);requestAnimationFrame(()=>{placePop(el);pop.classList.add("on")});
   clearInterval(galTimer);
+  if(n<2)return;
   galTimer=setInterval(()=>{
     idx=(idx+1)%n;
     const img=$("#pi"),c=$("#pc");if(!img)return clearInterval(galTimer);
     img.style.opacity=.2;
-    setTimeout(()=>{img.src=galleryShot(idx,+el.dataset.i);img.style.transition="opacity .3s";img.style.opacity=1;},130);
+    setTimeout(()=>{img.src=galleryShot(e,idx,seed);img.style.transition="opacity .3s";img.style.opacity=1;},130);
     c.textContent=(idx+1)+" / "+n;
   },1500);
 }

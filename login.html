@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="violet">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sign in — AgentBlazer Club Admin</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:ital,wght@0,500;0,600;1,400;1,500;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body class="a-body">
+
+<div class="ambient" aria-hidden="true"></div>
+<canvas id="stars" aria-hidden="true"></canvas>
+
+<main class="auth">
+  <div class="auth-card">
+    <div class="auth-mark">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 2.3 20.5 7v10L12 21.7 3.5 17V7L12 2.3Z" stroke="url(#lg)" stroke-width="1.4" stroke-linejoin="round"/>
+        <path d="M12 7.2 16.6 9.8v5.2L12 17.6 7.4 15V9.8L12 7.2Z" fill="url(#lg)" opacity=".4"/>
+        <circle cx="12" cy="12.4" r="1.7" fill="#fff"/>
+        <defs><linearGradient id="lg" x1="3" y1="2" x2="21" y2="22"><stop stop-color="#2ee6d6"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs>
+      </svg>
+    </div>
+
+    <h1>Sign in to the <em>club dashboard</em></h1>
+    <p class="sub">Update events, add or remove members, and keep the AgentBlazer Club site current. No coding needed.</p>
+
+    <form class="auth-form" id="form" autocomplete="on">
+      <div class="a-alert" id="err" role="alert"></div>
+
+      <div class="f">
+        <label for="user">Username</label>
+        <input id="user" name="username" type="text" autocomplete="username" placeholder="admin" required>
+      </div>
+
+      <div class="f">
+        <label for="pass">Password</label>
+        <div class="f-pw">
+          <input id="pass" name="password" type="password" autocomplete="current-password" placeholder="Your password" required>
+          <button type="button" id="peek" aria-label="Show password">Show</button>
+        </div>
+      </div>
+
+      <label class="f-check"><input type="checkbox" id="remember"> Keep me signed in on this device</label>
+
+      <button class="btn btn-1" type="submit" style="justify-content:center">Sign in
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+      </button>
+    </form>
+
+    <div class="auth-foot">
+      <a href="index.html">Back to the club site</a>
+      <span id="hint">First time? Use <b style="color:var(--ink-2)">admin</b> / <b style="color:var(--ink-2)">agentblazer@2026</b></span>
+    </div>
+  </div>
+</main>
+
+<script src="data.js"></script>
+<script>
+(function () {
+  "use strict";
+  var $ = function (s) { return document.querySelector(s); };
+
+  /* keep the theme the visitor last chose on the public site */
+  try { var t = localStorage.getItem("ab-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+
+  /* already signed in -> go straight through */
+  if (AB.session()) location.replace("admin.html");
+
+  /* hide the starter-credentials hint once the password has been changed */
+  try { if (localStorage.getItem("ab-admin-v1")) $("#hint").textContent = "Forgot your password? Ask the club tech lead to reset it."; } catch (e) {}
+
+  var peek = $("#peek"), pass = $("#pass");
+  peek.addEventListener("click", function () {
+    var show = pass.type === "password";
+    pass.type = show ? "text" : "password";
+    peek.textContent = show ? "Hide" : "Show";
+    peek.setAttribute("aria-label", show ? "Hide password" : "Show password");
+    pass.focus();
+  });
+
+  function fail(msg) {
+    var box = $("#err");
+    box.textContent = msg;
+    box.classList.remove("on");
+    void box.offsetWidth;
+    box.classList.add("on");
+  }
+
+  $("#form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var u = $("#user").value.trim(), p = $("#pass").value;
+    if (!u || !p) return fail("Enter both your username and password.");
+    if (AB.signIn(u, p, $("#remember").checked)) {
+      location.href = "admin.html";
+    } else {
+      fail("That username and password don’t match. Check for typos and try again.");
+      $("#pass").select();
+    }
+  });
+
+  /* ---- starfield, matching the public site ---- */
+  var sc = $("#stars"); if (!sc) return;
+  var sx = sc.getContext("2d"), stars = [], W, H, mx = -999, my = -999;
+  function size() {
+    W = innerWidth; H = innerHeight;
+    sc.width = W * devicePixelRatio; sc.height = H * devicePixelRatio;
+    sc.style.width = W + "px"; sc.style.height = H + "px";
+    sx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+    var n = Math.min(110, Math.round(W * H / 15000));
+    stars = Array.from({ length: n }, function () {
+      return { x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - .5) * .12, vy: (Math.random() - .5) * .12, r: Math.random() * 1.4 + .4, tw: Math.random() * 6.28 };
+    });
+  }
+  size(); addEventListener("resize", size);
+  addEventListener("pointermove", function (e) { mx = e.clientX; my = e.clientY; }, { passive: true });
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { sc.style.display = "none"; return; }
+  (function loop() {
+    var cs = getComputedStyle(document.documentElement);
+    var col = cs.getPropertyValue("--star").trim() || "rgba(160,190,255,.85)";
+    var lin = cs.getPropertyValue("--line").trim() || "rgba(120,160,220,.16)";
+    sx.clearRect(0, 0, W, H);
+    for (var i = 0; i < stars.length; i++) {
+      var s = stars[i];
+      s.x += s.vx; s.y += s.vy; s.tw += .02;
+      if (s.x < -12) s.x = W + 12; if (s.x > W + 12) s.x = -12;
+      if (s.y < -12) s.y = H + 12; if (s.y > H + 12) s.y = -12;
+      if (Math.hypot(s.x - mx, s.y - my) < 150) { s.x -= (mx - s.x) * .0016; s.y -= (my - s.y) * .0016; }
+      sx.globalAlpha = .4 + Math.sin(s.tw) * .3; sx.fillStyle = col;
+      sx.beginPath(); sx.arc(s.x, s.y, s.r, 0, 7); sx.fill();
+      for (var j = i + 1; j < stars.length; j++) {
+        var o = stars[j], dx = s.x - o.x, dy = s.y - o.y, dd = dx * dx + dy * dy;
+        if (dd < 19000) {
+          sx.globalAlpha = (1 - dd / 19000) * .5; sx.strokeStyle = lin; sx.lineWidth = .7;
+          sx.beginPath(); sx.moveTo(s.x, s.y); sx.lineTo(o.x, o.y); sx.stroke();
+        }
+      }
+    }
+    sx.globalAlpha = 1;
+    requestAnimationFrame(loop);
+  })();
+})();
+</script>
+</body>
+</html>
