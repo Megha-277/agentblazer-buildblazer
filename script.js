@@ -288,37 +288,13 @@ sizeStars();addEventListener("resize",sizeStars);
 })();
 
 /* ============================================================
-   HERO EMBLEM (generated hexagon crest)
+   HERO EMBLEM (club logo)
    ============================================================ */
 $("#emblem").innerHTML=`
-<svg viewBox="0 0 300 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="AgentBlazer Club crest">
-  <defs>
-    <linearGradient id="hx" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0a6ff"/><stop offset=".5" stop-color="#c084fc"/><stop offset="1" stop-color="#7c3aed"/></linearGradient>
-    <linearGradient id="cir" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset=".5" stop-color="#f0b429"/><stop offset="1" stop-color="#ec4899"/></linearGradient>
-    <clipPath id="hc"><path d="M150 14 271 84v140l-121 70-121-70V84Z"/></clipPath>
-    <filter id="gl"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-  </defs>
-  <g clip-path="url(#hc)">
-    <rect width="300" height="330" fill="#0a0413"/>
-    <g stroke="url(#cir)" stroke-width="1.1" opacity=".55" fill="none">
-      <path d="M20 60h58v34h44M20 120h40v52h40M282 70h-56v40h-46M282 150h-48v44h-36M40 250h64v-38h52M260 250h-70v-30h-44"/>
-      <path d="M150 40v34M150 296v-40M96 300l24-34M204 300l-24-34"/>
-    </g>
-    <g fill="url(#cir)" opacity=".8">
-      <circle cx="78" cy="94" r="3"/><circle cx="60" cy="172" r="3"/><circle cx="226" cy="110" r="3"/>
-      <circle cx="234" cy="194" r="3"/><circle cx="104" cy="212" r="3"/><circle cx="190" cy="220" r="3"/>
-    </g>
-    <g filter="url(#gl)">
-      <path d="M150 74c26 16 40 40 38 68-2 30-24 52-38 66-14-14-36-36-38-66-2-28 12-52 38-68Z" fill="none" stroke="url(#cir)" stroke-width="2.4"/>
-      <path d="M150 96c14 12 20 28 18 44-2 18-11 30-18 38-7-8-16-20-18-38-2-16 4-32 18-44Z" fill="none" stroke="#f0b429" stroke-width="1.6" opacity=".9"/>
-      <circle cx="150" cy="150" r="13" fill="none" stroke="#22d3ee" stroke-width="2.6"/>
-      <circle cx="150" cy="150" r="5" fill="#f0b429"/>
-      <path d="M118 128c-16-10-28-6-34 6M182 128c16-10 28-6 34 6M112 176c-18 4-26 16-24 30M188 176c18 4 26 16 24 30" fill="none" stroke="#ec4899" stroke-width="1.8" opacity=".75"/>
-    </g>
-  </g>
-  <path d="M150 14 271 84v140l-121 70-121-70V84Z" fill="none" stroke="url(#hx)" stroke-width="7" stroke-linejoin="round" filter="url(#gl)"/>
-  <path d="M150 26 261 90v128l-111 64-111-64V90Z" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.4" stroke-linejoin="round"/>
-</svg>`;
+<picture>
+  <source srcset="assets/logo.webp" type="image/webp">
+  <img src="assets/logo.png" alt="AgentBlazer Club crest" width="752" height="886" decoding="async" fetchpriority="high">
+</picture>`;
 
 /* ============================================================
    SPLASH — looping intro video

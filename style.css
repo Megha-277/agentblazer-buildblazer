@@ -389,7 +389,8 @@ body.mag .cur-ring{width:62px;height:62px;margin:-31px 0 0 -31px;border-color:va
 .hero-cta{display:flex;flex-wrap:wrap;gap:14px}
 
 .emblem-wrap{position:relative;display:grid;place-items:center;min-height:clamp(280px,34vw,440px)}
-.emblem{width:min(340px,74%);filter:drop-shadow(0 0 40px var(--glow-2));animation:float 7s var(--ease) infinite alternate}
+.emblem{width:min(260px,46%);max-height:min(340px,40vw);aspect-ratio:760/895;filter:drop-shadow(0 0 40px var(--glow-2));animation:float 7s var(--ease) infinite alternate}
+.emblem picture,.emblem img{width:100%;height:100%;object-fit:contain}
 @keyframes float{to{transform:translateY(-16px)}}
 .emblem-word{margin-top:10px;text-align:center;font-size:clamp(26px,3.4vw,40px);font-weight:800;letter-spacing:-.03em;background:var(--grad-word);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 20px var(--glow-1))}
 .emblem-word small{display:block;font-size:.4em;font-weight:700;letter-spacing:.42em;margin-top:2px;padding-left:.42em;color:var(--a1);-webkit-text-fill-color:currentColor}
