@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="violet">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AgentBlazer Club — Department of Computer Science &amp; Engineering, SJEC</title>
+<meta name="description" content="AgentBlazer Club — a student-led autonomous AI and Salesforce Trailblazer collective at St Joseph Engineering College, Mangaluru.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:ital,wght@0,500;0,600;1,400;1,500;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ AMBIENT ============ -->
+<div class="ambient" aria-hidden="true"></div>
+<canvas id="stars" aria-hidden="true"></canvas>
+<canvas id="trail" aria-hidden="true"></canvas>
+<div class="cur-ring" aria-hidden="true"></div>
+<div class="cur-dot" aria-hidden="true"></div>
+
+<!-- ============ SPLASH ============ -->
+<div id="splash" role="button" tabindex="0" aria-label="Enter the AgentBlazer Club site">
+  <canvas id="phoenix" aria-hidden="true"></canvas>
+  <div class="splash-vig" aria-hidden="true"></div>
+  <span class="tap">Tap to continue</span>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app">
+
+<header class="hdr">
+  <div class="wrap hdr-in">
+    <a class="brand" href="#" data-go="home">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 2.3 20.5 7v10L12 21.7 3.5 17V7L12 2.3Z" stroke="url(#bg1)" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M12 7.2 16.6 9.8v5.2L12 17.6 7.4 15V9.8L12 7.2Z" fill="url(#bg2)" opacity=".55"/>
+          <circle cx="12" cy="12.4" r="1.9" fill="#fff"/>
+          <defs>
+            <linearGradient id="bg1" x1="3" y1="2" x2="21" y2="22"><stop stop-color="#2ee6d6"/><stop offset="1" stop-color="#a855f7"/></linearGradient>
+            <linearGradient id="bg2" x1="7" y1="7" x2="17" y2="18"><stop stop-color="#38bdf8"/><stop offset="1" stop-color="#a855f7"/></linearGradient>
+          </defs>
+        </svg>
+      </span>
+      <span>
+        <span class="brand-name">Agent<span class="grad">Blazer</span><em>collective</em></span>
+        <span class="brand-sub">Department of Computer Science &amp; Engineering</span>
+      </span>
+    </a>
+
+    <button class="burger" id="burger" aria-label="Toggle navigation" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="nav" id="nav" aria-label="Primary">
+      <button class="on" data-go="home"><i class="pip"></i>Home</button>
+      <button data-go="about">About Us</button>
+      <button data-go="events">Events &amp; Workshops</button>
+      <button data-go="join">Join &amp; Connect</button>
+    </nav>
+
+    <div class="themes" role="group" aria-label="Colour theme">
+      <button class="on" data-theme="violet" aria-pressed="true"><i>⚡</i><span>Violet</span></button>
+      <button data-theme="inferno" aria-pressed="false"><i>🔥</i><span>Inferno</span></button>
+      <button data-theme="frost" aria-pressed="false"><i>❄️</i><span>Frost</span></button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ======================= HOME ======================= -->
+<section class="view on" id="v-home">
+  <div class="wrap">
+    <div class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow"><i class="dot"></i>Collegiate AI Initiative · St Joseph Engineering College</span>
+        <h1 class="display">Pioneering Autonomous<span class="it">&amp; Agentic AI Systems</span></h1>
+        <p class="hero-meta"><em>Department of Computer Science &amp; Engineering</em><span>·</span>St Joseph Engineering College, Mangaluru</p>
+        <p class="lede">A dedicated student-led laboratory shaping tomorrow's software engineers through autonomous agent architectures, open-source AI tooling, collaborative workshops, and premier Salesforce Trailblazer community synergy.</p>
+        <div class="hero-cta">
+          <button class="btn btn-1 mag" data-go="events">Explore workshops &amp; events
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+          </button>
+          <button class="btn btn-2 mag" data-go="about">Read club charter
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="emblem-wrap">
+        <div class="emblem" id="emblem"></div>
+        <div class="emblem-word">AgentBlazer<small>CLUB</small></div>
+      </div>
+    </div>
+
+    <div class="stats glass tilt">
+      <div>
+        <div class="stat-n">8+</div>
+        <div class="stat-l">Workshops &amp; challenges</div>
+      </div>
+      <div>
+        <div class="stat-n">500+</div>
+        <div class="stat-l">Engineering students reached</div>
+      </div>
+      <div>
+        <div class="stat-n">Salesforce</div>
+        <div class="stat-badge"><span class="tag t1">Community Partner</span></div>
+        <div class="stat-l">Active Trailblazer membership</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= ABOUT ======================= -->
+<section class="view" id="v-about">
+  <div class="wrap pad">
+    <div class="about-intro">
+      <div>
+        <span class="eyebrow up"><i class="dot"></i>Foundations &amp; leadership</span>
+        <h1 class="display" style="margin-top:20px">Inauguration &amp;<span class="it inline"> Mentorship Council</span></h1>
+      </div>
+      <p class="lede">Fostering technical curiosity, genuine mentorship, and bridging classroom theory with autonomous AI engineering practices.</p>
+    </div>
+
+    <div class="launch tilt">
+      <div>
+        <span class="eyebrow"><i class="dot"></i>Official launch &amp; keynote</span>
+        <h2>AgentBlazer Club Launch &amp; <em>Agentforce</em><span class="amber">Symposium</span></h2>
+        <p>The Department of Computer Science &amp; Engineering founded the AgentBlazer Club to build an authentic student collective centered on autonomous intelligence, open agent frameworks, and industry partnership.</p>
+      </div>
+      <div class="launch-date">
+        <b>Inaugurated on</b>
+        <strong>August 25, 2025</strong>
+        <div class="row"><span>Academic Year 2025–2026</span><span>SJEC Campus</span></div>
+      </div>
+    </div>
+
+    <div style="margin-top:clamp(34px,5vw,60px)">
+      <div class="sec-h"><i class="bar"></i><h2>Honored Guests <em>&amp; College Leadership</em></h2></div>
+      <div class="people" id="guests"></div>
+    </div>
+
+    <div class="council glass">
+      <div class="sec-h" style="margin-bottom:20px"><i class="bar"></i><h2 style="font-size:20px">Faculty Advisory Council</h2></div>
+      <div class="council-grid" id="faculty"></div>
+    </div>
+
+    <div style="margin-top:clamp(34px,5vw,58px)">
+      <div class="sec-h"><i class="bar"></i><h2>Student Core Team <em>&amp; Officers</em></h2><span class="aside">Academic Year 2025–2026</span></div>
+      <div class="officers" id="officers"></div>
+      <div class="committee glass">
+        <div class="committee-h"><b>Core working committee</b><span>Departmental Representatives</span></div>
+        <div class="committee-grid" id="committee"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= EVENTS ======================= -->
+<section class="view" id="v-events">
+  <div class="wrap pad">
+    <div class="ev-head">
+      <span class="eyebrow up"><i class="dot"></i>Workshops &amp; live sessions · Academic Year 2025–2026</span>
+      <h1 class="display">Workshops, Contests<span class="it inline"> &amp; Masterclasses</span></h1>
+      <p class="lede">Hands-on technical deep dives, algorithmic challenges, and real-world system deployments with seasoned engineers.</p>
+    </div>
+    <div class="events" id="events"></div>
+
+    <div class="po glass">
+      <div class="po-lead">
+        <b>Curricular integration</b>
+        <h3>Program Outcomes Mapping</h3>
+        <p>Alignment with college engineering competencies.</p>
+      </div>
+      <div class="po-item"><b>PO4 &amp; PO5 · Modern Tool Usage</b><p>Complex algorithmic problem analysis with modern toolkits (Groq, Agentforce).</p></div>
+      <div class="po-item"><b>PO6 &amp; PO7 · Societal Context</b><p>Ethical implications and responsible deployment of LLM and SecOps frameworks.</p></div>
+      <div class="po-item"><b>PO8 &amp; PO11 · Ethics &amp; Project Management</b><p>Collaborative team execution, code hygiene, and competitive event governance.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= JOIN ======================= -->
+<section class="view" id="v-join">
+  <div class="wrap">
+    <div class="join">
+      <div class="join-aura" aria-hidden="true"></div>
+      <div class="join-mark">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 2.3 20.5 7v10L12 21.7 3.5 17V7L12 2.3Z" stroke="url(#jg)" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="M12 7.2 16.6 9.8v5.2L12 17.6 7.4 15V9.8L12 7.2Z" fill="url(#jg)" opacity=".4"/>
+          <circle cx="12" cy="12.4" r="1.7" fill="#fff"/>
+          <defs><linearGradient id="jg" x1="3" y1="2" x2="21" y2="22"><stop stop-color="#2ee6d6"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs>
+        </svg>
+      </div>
+      <span class="eyebrow"><i class="dot"></i>Membership intake · Academic Year 2025–2026</span>
+      <h1 class="display">Ready to Build with<span class="it inline"> Autonomous Intelligence?</span></h1>
+      <p class="lede">Join the AgentBlazer Club at SJEC CSE. Collaborate with peers, gain hands-on access to Salesforce Trailhead developer orgs, and shape real AI agent projects.</p>
+      <div class="join-cta">
+        <a class="btn btn-1 mag" href="mailto:agentblazer.cse@sjec.ac.in?subject=AgentBlazer%20Club%20Membership">Become a member</a>
+        <a class="btn btn-2 mag" href="mailto:agentblazer.cse@sjec.ac.in?subject=CSE%20Department%20Enquiry">Contact CSE department</a>
+      </div>
+      <div class="dept glass">
+        <span class="ini">CSE</span>
+        <div>
+          <h4>Department of Computer Science &amp; Engineering</h4>
+          <p>St Joseph Engineering College, Vamanjoor<br>Mangaluru, Karnataka – 575028, India</p>
+          <p>Direct enquiries: <a href="mailto:agentblazer.cse@sjec.ac.in">agentblazer.cse@sjec.ac.in</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <div class="foot-brand">
+          <span class="brand-mark">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 2.3 20.5 7v10L12 21.7 3.5 17V7L12 2.3Z" stroke="url(#fg)" stroke-width="1.5" stroke-linejoin="round"/>
+              <circle cx="12" cy="12.2" r="2" fill="url(#fg)"/>
+              <defs><linearGradient id="fg" x1="3" y1="2" x2="21" y2="22"><stop stop-color="#2ee6d6"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs>
+            </svg>
+          </span>
+          <b>AgentBlazer Club</b>
+        </div>
+        <div class="foot-addr">
+          <b>Department of Computer Science &amp; Engineering</b>
+          <span>St Joseph Engineering College, Vamanjoor, Mangaluru, Karnataka – 575028, India</span>
+        </div>
+      </div>
+      <div class="foot-col">
+        <h5>Quick links</h5>
+        <ul>
+          <li><a href="#" data-go="about">About &amp; charter</a></li>
+          <li><a href="#" data-go="events">Workshops &amp; contests</a></li>
+          <li><a href="https://trailhead.salesforce.com" target="_blank" rel="noopener">Salesforce Trailhead community</a></li>
+          <li><a href="https://sjec.ac.in" target="_blank" rel="noopener">SJEC official website</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Affiliations</h5>
+        <div class="affils">
+          <span class="chip">SJEC CSE</span>
+          <span class="chip c1">Agentforce</span>
+          <span class="chip c2">Trailblazer</span>
+        </div>
+        <p class="foot-note">Empowered by faculty guidance and student leadership.</p>
+      </div>
+    </div>
+    <div class="foot-btm">
+      <span>© 2025–2026 AgentBlazer Club, St Joseph Engineering College. All rights reserved.</span>
+      <span><em>Academic Year 2025–2026</em> &nbsp;·&nbsp; <a href="#" data-go="join">Autonomous AI Initiative</a></span>
+    </div>
+  </div>
+</footer>
+
+</div><!-- /#app -->
+
+<!-- hover popup -->
+<div class="pop" id="pop" aria-hidden="true"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js" defer></script>
+<script src="script.js" defer></script>
+</body>
+</html>
