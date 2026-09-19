@@ -21,7 +21,10 @@
 
 <!-- ============ SPLASH ============ -->
 <div id="splash" role="button" tabindex="0" aria-label="Enter the AgentBlazer Club site">
-  <canvas id="phoenix" aria-hidden="true"></canvas>
+  <!-- Removed the 'loop' attribute so it doesn't loop from frame 0 -->
+  <video id="splash-video" autoplay muted playsinline preload="auto" poster="assets/splash-poster.jpg">
+    <source src="assets/splash-video.mp4" type="video/mp4">
+  </video>
   <div class="splash-vig" aria-hidden="true"></div>
   <span class="tap">Tap to continue</span>
 </div>

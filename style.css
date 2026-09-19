@@ -185,6 +185,7 @@ body.mag .cur-ring{width:62px;height:62px;margin:-31px 0 0 -31px;border-color:va
 #splash{position:fixed;inset:0;z-index:600;background:#02020a;display:grid;place-items:center;cursor:pointer;transition:opacity .9s var(--ease),visibility .9s}
 #splash.gone{opacity:0;visibility:hidden}
 #phoenix{position:absolute;inset:0;width:100%;height:100%}
+#splash-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#02020a}
 .splash-vig{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 46%,transparent 26%,rgba(2,2,10,.72) 76%,#02020a 100%)}
 .tap{
   position:relative;z-index:3;

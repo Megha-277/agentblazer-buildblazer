@@ -362,102 +362,50 @@ $("#emblem").innerHTML=`
 </svg>`;
 
 /* ============================================================
-   SPLASH — generative phoenix
+   SPLASH — looping intro video
    ============================================================ */
-const splash=$("#splash"),pc=$("#phoenix"),px=pc.getContext("2d");
-let pw2,ph2,pT=0,embers=[],splashOn=true;
-function sizeP(){pw2=pc.width=innerWidth*devicePixelRatio;ph2=pc.height=innerHeight*devicePixelRatio;pc.style.width=innerWidth+"px";pc.style.height=innerHeight+"px";px.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0)}
-sizeP();addEventListener("resize",()=>{if(splashOn)sizeP()});
+const splash = $("#splash"), splashVideo = $("#splash-video");
+let splashOn = true;
 
-function wing(dir,t){
-  const W2=innerWidth,H2=innerHeight,cx=W2/2,cy=H2*.46;
-  const flap=Math.sin(t*.9)*.16;
-  for(let f=0;f<13;f++){
-    const k=f/12;
-    const len=(Math.min(W2*.42,560))*(.42+.58*Math.sin(Math.PI*(0.12+k*.86)));
-    const ang=(-.95+k*1.55)+flap*(1-k*.5);
-    const ex=cx+dir*Math.cos(ang)*len;
-    const ey=cy+Math.sin(ang)*len*.62-len*.16;
-    const grad=px.createLinearGradient(cx,cy,ex,ey);
-    grad.addColorStop(0,"rgba(120,60,220,0)");
-    grad.addColorStop(.35,"rgba(150,90,250,.5)");
-    grad.addColorStop(.75,"rgba(196,132,252,.85)");
-    grad.addColorStop(1,"rgba(233,213,255,.15)");
-    px.strokeStyle=grad;
-    px.lineWidth=2.2+ (1-k)*3.4;
-    px.lineCap="round";
-    px.beginPath();
-    px.moveTo(cx+dir*10,cy+8);
-    px.quadraticCurveTo(cx+dir*len*.42,cy-len*.34+Math.sin(t+f)*7,ex,ey);
-    px.stroke();
-    // barbs
-    px.lineWidth=1;
-    px.globalAlpha=.36;
-    for(let b=1;b<5;b++){
-      const bt=b/5;
-      const bx=cx+dir*(len*.42*bt*2*(1-bt)+ (ex-cx)*bt);
-      const by=cy+(ey-cy)*bt-14*Math.sin(Math.PI*bt);
-      px.beginPath();px.moveTo(bx,by);px.lineTo(bx+dir*16,by+20);px.stroke();
+// Loop boundary timestamps in seconds based on video length
+const PHOENIX_LOOP_START = 5.0; // Eyes disappear at 0:05
+const PHOENIX_LOOP_END = 9.9;   // Jump back right before full end at 0:10 to prevent hitching
+
+if (splashVideo) {
+  const tryPlay = () => splashVideo.play().catch(() => {});
+  tryPlay();
+  splash.addEventListener("pointerdown", tryPlay, { once: true });
+
+  let introFinished = false;
+
+  // Track playback time to loop only the phoenix portion
+  splashVideo.addEventListener("timeupdate", () => {
+    if (splashVideo.currentTime >= PHOENIX_LOOP_START) {
+      introFinished = true;
     }
-    px.globalAlpha=1;
-  }
-}
-function phoenixLoop(){
-  if(!splashOn)return;
-  const W2=innerWidth,H2=innerHeight,cx=W2/2,cy=H2*.46;
-  pT+=.016;
-  px.clearRect(0,0,W2,H2);
-  px.fillStyle="#02020a";px.fillRect(0,0,W2,H2);
-  px.globalCompositeOperation="lighter";
 
-  const halo=px.createRadialGradient(cx,cy,10,cx,cy,Math.max(W2,H2)*.42);
-  halo.addColorStop(0,"rgba(130,70,230,.34)");halo.addColorStop(1,"rgba(10,0,30,0)");
-  px.fillStyle=halo;px.fillRect(0,0,W2,H2);
-
-  wing(-1,pT);wing(1,pT);
-
-  // body + tail
-  px.strokeStyle="rgba(196,132,252,.9)";px.lineWidth=7;px.lineCap="round";
-  px.beginPath();px.moveTo(cx,cy-46);
-  px.quadraticCurveTo(cx+Math.sin(pT)*8,cy+70,cx+Math.sin(pT*1.3)*26,cy+180);
-  px.stroke();
-  px.lineWidth=2.4;px.strokeStyle="rgba(167,139,250,.55)";
-  for(let i=-2;i<=2;i++){
-    px.beginPath();px.moveTo(cx,cy+30);
-    px.quadraticCurveTo(cx+i*40,cy+140,cx+i*78+Math.sin(pT+i)*16,cy+238);
-    px.stroke();
-  }
-  // head + eyes
-  px.fillStyle="rgba(233,213,255,.9)";
-  px.beginPath();px.ellipse(cx,cy-56,15,19,0,0,7);px.fill();
-  const pulse=.7+Math.sin(pT*2.4)*.3;
-  [-1,1].forEach(d=>{
-    const g=px.createRadialGradient(cx+d*7,cy-60,0,cx+d*7,cy-60,18);
-    g.addColorStop(0,`rgba(180,240,255,${pulse})`);g.addColorStop(1,"rgba(60,180,255,0)");
-    px.fillStyle=g;px.beginPath();px.arc(cx+d*7,cy-60,18,0,7);px.fill();
+    // Once it hits the end of the video, seek back to 0:05
+    if (introFinished && splashVideo.currentTime >= PHOENIX_LOOP_END) {
+      splashVideo.currentTime = PHOENIX_LOOP_START;
+      splashVideo.play();
+    }
   });
-  // embers
-  if(embers.length<150&&Math.random()>.35)
-    embers.push({x:cx+(Math.random()-.5)*W2*.5,y:cy+120+Math.random()*90,r:Math.random()*2.4+.7,v:.4+Math.random()*1.3,a:1,h:Math.random()*40+260});
-  embers=embers.filter(e=>e.a>0);
-  embers.forEach(e=>{
-    e.y-=e.v;e.x+=Math.sin(e.y*.02)*.5;e.a-=.006;
-    px.globalAlpha=Math.max(e.a,0);
-    px.fillStyle=`hsl(${e.h},95%,72%)`;
-    px.beginPath();px.arc(e.x,e.y,e.r,0,7);px.fill();
-  });
-  px.globalAlpha=1;px.globalCompositeOperation="source-over";
-  requestAnimationFrame(phoenixLoop);
 }
-phoenixLoop();
 
-function enter(){
-  if(!splashOn)return;
-  splashOn=false;
+function enter() {
+  if (!splashOn) return;
+  splashOn = false;
   splash.classList.add("gone");
   $("#app").classList.add("on");
-  setTimeout(()=>{splash.remove();},1000);
+  if (splashVideo) { splashVideo.pause(); }
+  setTimeout(() => { splash.remove(); }, 1000);
 }
-splash.addEventListener("click",enter);
-splash.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();enter();}});
+
+splash.addEventListener("click", enter);
+splash.addEventListener("keydown", e => {
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault();
+    enter();
+  }
+});
 splash.focus?.();
