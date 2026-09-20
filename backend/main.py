@@ -177,10 +177,10 @@ def login(request: Request, body: LoginRequest):
         })
     except Exception:
         # Deliberately generic error to prevent email enumeration
-        raise HTTPException(status_code=401, detail="Invalid email or password.")
+        raise HTTPException(status_code=401, detail="Entered password and email mismatch")
 
     if not result or not result.session:
-        raise HTTPException(status_code=401, detail="Invalid email or password.")
+        raise HTTPException(status_code=401, detail="Entered password and email mismatch")
 
     # Profile verification: check if account is inactive/pending
     admin = get_admin_client()
@@ -192,9 +192,9 @@ def login(request: Request, body: LoginRequest):
             title_str = str(p_data.get("title") or "")
             if not is_act:
                 if "rejected" in title_str:
-                    raise HTTPException(status_code=403, detail="Your membership application was reviewed and not approved.")
+                    raise HTTPException(status_code=403, detail="Your application was rejected.")
                 elif "pending" in title_str or title_str.startswith("pending_approval"):
-                    raise HTTPException(status_code=403, detail="Your registration is currently pending Faculty/HOD approval. You will receive access once approved.")
+                    raise HTTPException(status_code=403, detail="Your registration is currently pending Faculty approval. You will receive access once approved.")
                 else:
                     raise HTTPException(status_code=403, detail="Your account is currently inactive. Please contact club administration.")
     except HTTPException:
@@ -310,12 +310,75 @@ def signup(request: Request, body: SignupRequest):
 
     return {
         "status": "pending_approval",
-        "message": "Registration submitted successfully. Your application is queued for Faculty/HOD approval.",
+        "message": "Registration submitted successfully. Your application is queued for Faculty approval.",
         "user_id": new_user_id,
         "email": clean_email,
         "full_name": clean_name,
         "expected_graduation_year": grad_year
     }
+
+class CheckStatusRequest(BaseModel):
+    email: EmailStr
+
+@app.post("/api/check-status")
+@limiter.limit("10/minute")
+def check_application_status(request: Request, body: CheckStatusRequest):
+    clean_email = body.email.strip().lower()
+    if not clean_email.endswith("@sjec.ac.in"):
+        raise HTTPException(status_code=400, detail="Please enter a valid institutional @sjec.ac.in email address.")
+
+    admin = get_admin_client()
+    try:
+        target_uid = None
+        try:
+            for u in admin.auth.admin.list_users():
+                if (u.email or "").lower() == clean_email:
+                    target_uid = u.id
+                    break
+        except Exception:
+            pass
+
+        if not target_uid:
+            p_res = admin.table("profiles").select("*").ilike("title", f"%{clean_email}%").execute()
+            if p_res and p_res.data and len(p_res.data) > 0:
+                target_uid = p_res.data[0]["id"]
+
+        if not target_uid:
+            raise HTTPException(status_code=404, detail=f"No registration application found for email '{clean_email}'. Please submit an application on the Join page.")
+
+        profile_res = admin.table("profiles").select("*").eq("id", target_uid).maybe_single().execute()
+        if not profile_res.data:
+            raise HTTPException(status_code=404, detail="Application profile record not found.")
+
+        p = profile_res.data
+        is_active = p.get("is_active", False)
+        title_str = str(p.get("title") or "")
+        full_name = p.get("full_name") or clean_email
+        role = p.get("role", "member")
+        grad_year = p.get("expected_graduation_year")
+
+        if is_active:
+            status_code = "approved"
+            message = f"Your application is APPROVED! Assigned Role: '{role.upper()}'."
+        elif "rejected" in title_str:
+            status_code = "rejected"
+            message = "Your membership application was reviewed and not approved by Faculty."
+        else:
+            status_code = "pending_approval"
+            message = "Your registration application is currently pending Faculty approval."
+
+        return {
+            "email": clean_email,
+            "full_name": full_name,
+            "status": status_code,
+            "message": message,
+            "role": role,
+            "expected_graduation_year": grad_year
+        }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Could not check status: {exc}")
 
 # ------------------------------------------------------------
 # PRIVILEGED APPROVAL QUEUE (Faculty / HOD only)
@@ -359,25 +422,31 @@ def get_pending_members(authorization: Optional[str] = Header(default=None)):
 
 class ApprovalRequest(BaseModel):
     user_id: str
+    role: Optional[str] = "member"
 
 @app.post("/api/approve-member")
 def approve_member(body: ApprovalRequest, authorization: Optional[str] = Header(default=None)):
     token = parse_auth_header(authorization)
     caller = _get_caller_profile(token)
     if caller.get("role_level", 0) < 5:
-        raise HTTPException(status_code=403, detail="Forbidden: Faculty or HOD level required to approve applications.")
+        raise HTTPException(status_code=403, detail="Forbidden: Faculty level required to approve applications.")
 
     # Self-modification lock: cannot approve self
     if caller["id"] == body.user_id:
         raise HTTPException(status_code=400, detail="Security lockdown: Cannot alter own approval status.")
+
+    new_role = body.role.lower().strip() if body.role else "member"
+    if new_role not in ROLE_LEVELS:
+        new_role = "member"
+    target_new_level = ROLE_LEVELS[new_role]
 
     admin = get_admin_client()
     try:
         admin.table("profiles").update({
             "is_active": True,
             "title": "approved",
-            "role": "member",
-            "role_level": 0,
+            "role": new_role,
+            "role_level": target_new_level,
             "updated_at": datetime.datetime.utcnow().isoformat()
         }).eq("id", body.user_id).execute()
 
@@ -387,7 +456,7 @@ def approve_member(body: ApprovalRequest, authorization: Optional[str] = Header(
             "row_id": body.user_id,
             "action": "MEMBER_APPROVED",
             "changed_by": caller["id"],
-            "diff": {"approved_by": caller.get("full_name"), "role": caller.get("role")}
+            "diff": {"approved_by": caller.get("full_name"), "role": new_role, "role_level": target_new_level}
         }).execute()
 
         return {"status": "approved", "user_id": body.user_id}
@@ -399,7 +468,7 @@ def reject_member(body: ApprovalRequest, authorization: Optional[str] = Header(d
     token = parse_auth_header(authorization)
     caller = _get_caller_profile(token)
     if caller.get("role_level", 0) < 5:
-        raise HTTPException(status_code=403, detail="Forbidden: Faculty or HOD level required to reject applications.")
+        raise HTTPException(status_code=403, detail="Forbidden: Faculty level required to reject applications.")
 
     if caller["id"] == body.user_id:
         raise HTTPException(status_code=400, detail="Security lockdown: Cannot reject own account.")

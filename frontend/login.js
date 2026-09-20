@@ -11,6 +11,8 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
   if (!email || !password) return;
 
   if (errorEl) {
+    errorEl.classList.remove("on");
+    errorEl.style.display = "none";
     errorEl.hidden = true;
     errorEl.textContent = "";   // clear any previous message before a new attempt
   }
@@ -28,9 +30,9 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
     });
 
     if (!res.ok) {
-      // Backend returns generic message for invalid credentials
+      // Backend returns message for invalid credentials / status check
       const errData = await res.json().catch(() => ({}));
-      throw new Error(errData.detail || "Invalid email or password.");
+      throw new Error(errData.detail || "Entered password and email mismatch");
     }
 
     const { access_token, refresh_token } = await res.json();
@@ -51,7 +53,9 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
 
   } catch (err) {
     if (errorEl) {
-      errorEl.textContent = err.message || "Something went wrong. Please try again.";
+      errorEl.textContent = err.message || "Entered password and email mismatch";
+      errorEl.classList.add("on");
+      errorEl.style.display = "flex";
       errorEl.hidden = false;
     } else {
       console.error("Login Error:", err);

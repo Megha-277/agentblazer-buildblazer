@@ -181,11 +181,33 @@
     return await res.json();
   }
 
+  // Check Application Status
+  async function checkStatus(email) {
+    const cleanEmail = String(email || "").trim().toLowerCase();
+    if (!cleanEmail.endsWith("@sjec.ac.in")) {
+      throw new Error("Please enter a valid institutional @sjec.ac.in email address.");
+    }
+
+    const res = await fetch(`${BASE_URL}/api/check-status`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: cleanEmail })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || "Could not check application status.");
+    }
+
+    return await res.json();
+  }
+
   window.DataService = {
     esc,
     getEvents,
     getTeamMembers,
     submitContact,
-    submitSignup
+    submitSignup,
+    checkStatus
   };
 })();

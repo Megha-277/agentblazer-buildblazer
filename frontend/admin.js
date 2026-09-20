@@ -193,7 +193,8 @@
         { k: "note", l: "Extra line / Session lead", t: "text", ph: "Session leads, platform, venue…" },
         { k: "tracks", l: "Tracks (one per line)", t: "list", ph: "Track 1: 1st Year Engineers" },
         { k: "foot", l: "Footer note", t: "text", ph: "80 Shortlisted Students" },
-        { k: "hint", l: "Footer hint", t: "text", ph: "Hover to inspect gallery" }
+        { k: "hint", l: "Footer hint", t: "text", ph: "Hover to inspect gallery" },
+        { k: "gallery.images", l: "Event Gallery Images (Up to 10 images max)", t: "upload_list", max: 10, help: "Upload local image files or paste image URLs (one per line, maximum 10 images).", ph: "Upload or paste image URLs (one per line)..." }
       ]
     },
     officers: {
@@ -360,6 +361,14 @@
       html += `<textarea id="${id}" data-k="${f.k}" placeholder="${ph}">${esc(val || "")}</textarea>`;
     } else if (f.t === "list") {
       html += `<textarea id="${id}" data-k="${f.k}" data-list="1" placeholder="${ph}">${esc((Array.isArray(val) ? val : []).join("\n"))}</textarea>`;
+    } else if (f.t === "upload_list") {
+      const urls = (Array.isArray(val) ? val : []).join("\n");
+      html += `
+        <div class="upload-list-box" style="display:flex;flex-direction:column;gap:8px">
+          <textarea id="${id}" data-k="${f.k}" data-list="1" data-max="${f.max || 10}" placeholder="${ph}" style="min-height:110px">${esc(urls)}</textarea>
+          <button type="button" class="upload-btn a-mini" data-upload-target="${id}" style="align-self:flex-start">+ Upload &amp; Add Image</button>
+        </div>
+      `;
     } else if (f.t === "upload") {
       html += `
         <div class="upload-box">
@@ -446,7 +455,20 @@
         const data = await res.json();
         if (currentUploadTargetInputId) {
           const targetInput = $(`#${currentUploadTargetInputId}`);
-          if (targetInput) targetInput.value = data.url;
+          if (targetInput) {
+            if (targetInput.tagName.toLowerCase() === "textarea") {
+              const currentVal = targetInput.value.trim();
+              const lines = currentVal ? currentVal.split("\n").map(x => x.trim()).filter(Boolean) : [];
+              if (lines.length >= 10) {
+                alert("Maximum limit of 10 gallery images reached for this event.");
+              } else {
+                lines.push(data.url);
+                targetInput.value = lines.join("\n");
+              }
+            } else {
+              targetInput.value = data.url;
+            }
+          }
         }
         toast("Verified & uploaded to club-media bucket!");
       } catch (err) {
@@ -468,6 +490,9 @@
       let v = el.value.trim();
       if (el.dataset.list) {
         v = v.split("\n").map(x => x.trim()).filter(Boolean);
+        if (el.dataset.max) {
+          v = v.slice(0, +el.dataset.max);
+        }
       }
       set(item, el.dataset.k, v);
     });
@@ -565,6 +590,14 @@
             <p class="meta"><b>${esc(u.email)}</b> · Expected Grad: ${esc(u.expected_graduation_year || "N/A")} · Applied: ${new Date(u.created_at).toLocaleDateString()}</p>
           </div>
           <div class="a-acts">
+            <select class="role-select" id="role-${u.id}" style="margin-right:10px; padding:4px 8px; border-radius:4px; border:1px solid var(--ink-3); background:var(--bg); color:var(--ink-1);">
+              <option value="member">Member</option>
+              <option value="tech_lead">Tech Lead</option>
+              <option value="event_manager">Event Manager</option>
+              <option value="secretary">Secretary</option>
+              <option value="president">President</option>
+              <option value="faculty">Faculty</option>
+            </select>
             <button class="a-ico approve" data-approve="${u.id}">Approve</button>
             <button class="a-ico reject" data-reject="${u.id}">Reject</button>
           </div>
@@ -575,13 +608,15 @@
       $$("[data-approve]", host).forEach(b => {
         b.addEventListener("click", async () => {
           const uid = b.dataset.approve;
+          const roleSel = $("#role-" + uid);
+          const selectedRole = roleSel ? roleSel.value : "member";
           b.disabled = true;
           b.textContent = "Approving...";
           try {
             const actRes = await fetch(`${BASE_URL}/api/approve-member`, {
               method: "POST",
               headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-              body: JSON.stringify({ user_id: uid })
+              body: JSON.stringify({ user_id: uid, role: selectedRole })
             });
             if (!actRes.ok) throw new Error("Approval failed.");
             toast("Member approved! Status updated to approved.");
@@ -657,7 +692,8 @@
 
       host.innerHTML = allMembers.map(u => {
         const isSelf = u.id === CURRENT_USER.id;
-        const canModify = !isSelf && (callerLvl >= 5 || (callerLvl === 4 && u.role_level < 4));
+        const isApproved = u.status === 'approved';
+        const canModify = !isSelf && isApproved && (callerLvl >= 5 || (callerLvl === 4 && u.role_level < 4));
 
         return `
           <article class="a-row">
@@ -678,13 +714,13 @@
                     .map(opt => `<option value="${opt.r}" ${u.role === opt.r ? 'selected' : ''}>${opt.l}</option>`)
                     .join("")}
                 </select>
-              ` : `<span style="font-size:12px;color:var(--ink-4)">${isSelf ? 'Self-Locked' : 'Protected'}</span>`}
+              ` : `<span style="font-size:12px;color:var(--ink-4)">${isSelf ? 'Self-Locked' : u.status === 'rejected' ? 'Rejected' : 'Protected'}</span>`}
             </div>
           </article>
         `;
       }).join("");
 
-      // Role change listeners
+      // Role change listeners for active members
       $$(".role-select", host).forEach(sel => {
         sel.addEventListener("change", async () => {
           const targetId = sel.dataset.userRole;

@@ -185,31 +185,30 @@ async function populatePageData() {
    ============================================================ */
 
 function setupForms() {
-  // 1. Dual Tab Switcher
+  // 1. Triple Tab Switcher
   const tabSignup = $("#tab-signup");
+  const tabStatus = $("#tab-status");
   const tabContact = $("#tab-contact");
   const boxSignup = $("#box-signup");
+  const boxStatus = $("#box-status");
   const boxContact = $("#box-contact");
 
-  if (tabSignup && tabContact && boxSignup && boxContact) {
-    tabSignup.addEventListener("click", () => {
-      tabSignup.classList.add("on");
-      tabSignup.setAttribute("aria-selected", "true");
-      tabContact.classList.remove("on");
-      tabContact.setAttribute("aria-selected", "false");
-      boxSignup.style.display = "block";
-      boxContact.style.display = "none";
+  function switchTab(activeTab, activeBox) {
+    [tabSignup, tabStatus, tabContact].forEach(t => {
+      if (t) {
+        const on = t === activeTab;
+        t.classList.toggle("on", on);
+        t.setAttribute("aria-selected", String(on));
+      }
     });
-
-    tabContact.addEventListener("click", () => {
-      tabContact.classList.add("on");
-      tabContact.setAttribute("aria-selected", "true");
-      tabSignup.classList.remove("on");
-      tabSignup.setAttribute("aria-selected", "false");
-      boxContact.style.display = "block";
-      boxSignup.style.display = "none";
+    [boxSignup, boxStatus, boxContact].forEach(b => {
+      if (b) b.style.display = (b === activeBox) ? "block" : "none";
     });
   }
+
+  if (tabSignup) tabSignup.addEventListener("click", () => switchTab(tabSignup, boxSignup));
+  if (tabStatus) tabStatus.addEventListener("click", () => switchTab(tabStatus, boxStatus));
+  if (tabContact) tabContact.addEventListener("click", () => switchTab(tabContact, boxContact));
 
   // Helper for displaying accessible, visible form alerts
   function showFormStatus(box, htmlContent, isSuccess) {
@@ -310,7 +309,7 @@ function setupForms() {
               <h4 style="margin:0;font-size:18px;font-weight:700;color:var(--a1)">Application Submitted Successfully!</h4>
             </div>
             <p style="margin:6px 0 12px;font-size:14px;color:var(--ink-1);line-height:1.5">
-              Your registration application has been placed in the <strong>Faculty &amp; HOD Approval Queue</strong> with status <code style="padding:2px 6px;border-radius:4px;background:rgba(234,179,8,0.2);color:#facc15;font-weight:600">pending_approval</code>.
+              Your registration application has been placed in the <strong>Faculty Approval Queue</strong> with status <code style="padding:2px 6px;border-radius:4px;background:rgba(234,179,8,0.2);color:#facc15;font-weight:600">pending_approval</code>.
             </p>
             <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.7;margin-bottom:14px;color:var(--ink-2)">
               <div><strong>Applicant:</strong> ${esc(fullName)}</div>
@@ -349,7 +348,65 @@ function setupForms() {
     });
   }
 
-  // 3. General Contact Form
+  // 3. Application Status Checker Form
+  const statusForm = $("#status-form");
+  if (statusForm) {
+    const statusBox = $("#check-status-box");
+    const submitBtn = $("#check-btn");
+
+    statusForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearFormStatus(statusBox);
+
+      const email = $("#check-email").value.trim().toLowerCase();
+      if (!email.endsWith("@sjec.ac.in")) {
+        showFormStatus(statusBox, "<strong>Domain Error:</strong> Please enter a valid institutional <code>@sjec.ac.in</code> email address.", false);
+        $("#check-email").focus();
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Checking status...";
+
+      try {
+        const res = await DataService.checkStatus(email);
+        const isApp = res.status === "approved";
+        const isRej = res.status === "rejected";
+        const badgeClass = isApp ? "approved" : isRej ? "rejected" : "pending";
+        const badgeLabel = isApp ? "APPROVED" : isRej ? "NOT APPROVED" : "PENDING FACULTY APPROVAL";
+        const badgeColor = isApp ? "#22c55e" : isRej ? "#ef4444" : "#facc15";
+
+        showFormStatus(statusBox, `
+          <div style="text-align:left">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px">
+              <h4 style="margin:0;font-size:17px;font-weight:700;color:var(--ink-1)">Application Record Found</h4>
+              <span class="badge-status ${badgeClass}" style="background:${badgeColor}22;color:${badgeColor};border:1px solid ${badgeColor}66;padding:4px 10px;border-radius:6px;font-weight:700;font-size:12px">
+                ${badgeLabel}
+              </span>
+            </div>
+            <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.7;color:var(--ink-2)">
+              <div><strong>Applicant Name:</strong> ${esc(res.full_name)}</div>
+              <div><strong>Institutional Email:</strong> ${esc(res.email)}</div>
+              <div><strong>Graduation Batch:</strong> ${esc(res.expected_graduation_year || "N/A")}</div>
+              <div style="margin-top:6px;font-weight:600;color:var(--ink-1)">${esc(res.message)}</div>
+            </div>
+            ${isApp ? `
+              <div style="margin-top:12px">
+                <a href="login.html" class="btn btn-1" style="font-size:13px;padding:8px 16px;text-decoration:none">Sign in to Member Portal &rarr;</a>
+              </div>
+            ` : ''}
+          </div>
+        `, isApp);
+      } catch (err) {
+        showFormStatus(statusBox, `<strong>Status Check:</strong> ${esc(err.message || "Could not retrieve status.")}`, false);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `Check Live Application Status <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>`;
+      }
+    });
+  }
+
+  // 4. General Contact Form
   const contactForm = $("#contact-form");
   if (contactForm) {
     const statusBox = $("#contact-status");

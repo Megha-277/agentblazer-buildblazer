@@ -99,6 +99,7 @@
       <!-- Workflow Switcher Tabs -->
       <div class="dual-tabs" role="tablist">
         <button class="on" id="tab-signup" type="button" role="tab" aria-selected="true">Student Membership Intake</button>
+        <button id="tab-status" type="button" role="tab" aria-selected="false">Check Application Status</button>
         <button id="tab-contact" type="button" role="tab" aria-selected="false">Contact CSE Department</button>
       </div>
 
@@ -148,7 +149,31 @@
         </form>
       </div>
 
-      <!-- WORKFLOW 2: CONTACT CSE DEPARTMENT FORM -->
+      <!-- WORKFLOW 2: CHECK APPLICATION STATUS FORM -->
+      <div class="form-card glass" id="box-status" style="width:100%;display:none">
+        <div style="text-align:left;margin-bottom:18px">
+          <h2 style="font-size:22px;font-weight:700">Check Membership Application Status</h2>
+          <p style="font-size:13.5px;color:var(--ink-3);margin-top:4px">
+            Track your registration approval progress. Enter your registered <strong style="color:var(--a1)">@sjec.ac.in</strong> email address below.
+          </p>
+        </div>
+
+        <form id="status-form" autocomplete="off" novalidate>
+          <div class="form-field full-width">
+            <label for="check-email">SJEC Institutional Email *</label>
+            <input type="email" id="check-email" name="email" placeholder="e.g. 26d89.alex@sjec.ac.in" required maxlength="120">
+          </div>
+
+          <div class="form-status" id="check-status-box" role="alert" style="margin-top:14px"></div>
+
+          <button type="submit" class="btn btn-1" id="check-btn" style="margin-top:20px;width:100%;justify-content:center">
+            Check Live Application Status
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+          </button>
+        </form>
+      </div>
+
+      <!-- WORKFLOW 3: CONTACT CSE DEPARTMENT FORM -->
       <div class="form-card glass" id="box-contact" style="width:100%;display:none">
         <div style="text-align:left;margin-bottom:18px">
           <h2 style="font-size:22px;font-weight:700">General Enquiry &amp; Mentorship Outreach</h2>
