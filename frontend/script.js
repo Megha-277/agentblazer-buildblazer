@@ -1,18 +1,15 @@
 /* ============================================================
-   DATA  — now loaded from data.js (editable in admin.html)
+   SHARED UTILITIES — used by both the render block and popup handlers
    ============================================================ */
-const CONTENT  = window.AB ? AB.load() : { guests: [], faculty: [], officers: [], committee: [], events: [] };
-const GUESTS   = CONTENT.guests;
-const FACULTY  = CONTENT.faculty;
-const OFFICERS = CONTENT.officers;
-const COMMITTEE= CONTENT.committee;
-const EVENTS   = CONTENT.events;
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 
 const ACCENT={t1:"a1",t2:"a2",t3:"a3",t4:"a4"};
 const accent=c=>`var(--${ACCENT[c]||"a1"})`;
 const esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 
-/* --------- placeholder portrait generator (used when no photo is set) --------- */
+function initials(n){return String(n).replace(/[^A-Za-z ]/g,"").split(" ").filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join("")}
+
+/* --------- placeholder portrait / gallery generators --------- */
 const PALETTES=[["#123a2e","#2f6f52"],["#1b2b4d","#3d5d8a"],["#3a1f4d","#6b4a8f"],["#4d3a1f","#8a6b3d"],["#1f3f4d","#3d7a8a"],["#4d1f2e","#8a3d55"]];
 function portrait(name,i){
   const [a,b]=PALETTES[i%PALETTES.length];
@@ -25,7 +22,6 @@ function portrait(name,i){
   return "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(s);
 }
 function photoOf(p,i){return p.photo?p.photo:portrait(p.name,i)}
-
 function placeholderShot(i,seed){
   const hues=[188,265,32,150,320,210];const h=hues[(i+seed)%hues.length];
   const s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
@@ -38,25 +34,49 @@ function placeholderShot(i,seed){
   <text x="200" y="285" text-anchor="middle" font-family="sans-serif" font-size="15" fill="rgba(255,255,255,.4)">Event photo ${i+1}</text></svg>`;
   return "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(s);
 }
-/* real photos when the admin has added links, placeholders otherwise */
 function shotCount(e){const g=e.gallery||{};return (g.images&&g.images.length)?g.images.length:Math.max(1,+g.count||1)}
 function galleryShot(e,i,seed){const g=e.gallery||{};return (g.images&&g.images.length)?g.images[i%g.images.length]:placeholderShot(i,seed)}
 
-function initials(n){return String(n).replace(/[^A-Za-z ]/g,"").split(" ").filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join("")}
-
 /* ============================================================
-   RENDER
+   DATA  — loaded from /api/content (API-first), falling back to
+   data.js (localStorage / hardcoded defaults) if unreachable.
    ============================================================ */
-const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 
-$("#guests").innerHTML=GUESTS.map(g=>`
+async function loadContent() {
+  try {
+    const base = (typeof window.API_BASE_URL !== "undefined" ? window.API_BASE_URL : "");
+    const res = await fetch(`${base}/api/content`);
+    if (res.ok) {
+      const remote = await res.json();
+      // Only use remote if it has at least one non-empty section
+      const hasData = ["guests","faculty","officers","committee","events"]
+        .some(k => Array.isArray(remote[k]) && remote[k].length > 0);
+      if (hasData) return remote;
+    }
+  } catch (_) { /* network error — fall through to local */ }
+  // Fallback: localStorage edits or hardcoded defaults via data.js
+  return window.AB ? AB.load() : { guests: [], faculty: [], officers: [], committee: [], events: [] };
+}
+
+// Kick off data fetch then render once resolved
+loadContent().then(function(CONTENT) {
+  const GUESTS    = CONTENT.guests;
+  const FACULTY   = CONTENT.faculty;
+  const OFFICERS  = CONTENT.officers;
+  const COMMITTEE = CONTENT.committee;
+  const EVENTS    = CONTENT.events;
+
+  // Expose EVENTS globally so galleryPop (below) can read it after render
+  window._AB_EVENTS = EVENTS;
+
+  GUESTS.length && ($("#guests").innerHTML=GUESTS.map(g=>`
   <article class="person glass tilt">
     <div class="person-top">
       <span class="ini">${initials(g.name)}</span>
       <div><h3>${esc(g.name)}</h3><p class="role">${esc(g.org)}</p></div>
     </div>
     <div class="person-foot"><span>${esc(g.left)}</span><b style="color:${accent(g.color)}">${esc(g.right)}</b></div>
-  </article>`).join("");
+  </article>`).join(""));
 
 $("#faculty").innerHTML=FACULTY.map((f,i)=>`
   <article class="fac glass" data-pop="portrait" data-name="${esc(f.name)}" data-role="${esc(f.role)}" data-tag="Faculty" data-img="${esc(photoOf(f,i+4))}">
@@ -87,6 +107,12 @@ $("#events").innerHTML=EVENTS.map((e,i)=>`
     <p>${esc(e.desc)}</p>
     <div class="ev-foot"><span class="hint"><i></i>${esc(e.hint||"Hover to inspect gallery")}</span><b>${esc(e.foot)}</b></div>
   </article>`).join("");
+
+  // Re-init tilt on newly rendered cards if VanillaTilt is already loaded
+  if(window.VanillaTilt && !matchMedia("(pointer:coarse)").matches){
+    VanillaTilt.init($$(".tilt"),{max:5,speed:900,glare:true,"max-glare":.14,scale:1.008,gyroscope:false});
+  }
+}); // end loadContent().then()
 
 /* ============================================================
    TABS
@@ -145,7 +171,7 @@ function portraitPop(el){
   placePop(el);requestAnimationFrame(()=>{placePop(el);pop.classList.add("on")});
 }
 function galleryPop(el){
-  const seed=+el.dataset.i, e=EVENTS[seed], g=e.gallery||{}, n=shotCount(e);let idx=0;
+  const seed=+el.dataset.i, EVENTS=window._AB_EVENTS||[], e=EVENTS[seed]||{gallery:{},title:"",date:""}, g=e.gallery||{}, n=shotCount(e);let idx=0;
   pop.className="pop wide";
   pop.innerHTML=`<div class="pop-head"><b><i></i>${esc(g.label||"Gallery")}</b><span id="pc">1 / ${n}</span></div>
     <div class="pop-media"><img id="pi" alt="${esc(g.caption||e.title)}" src="${galleryShot(e,0,seed)}"></div>

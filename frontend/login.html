@@ -58,9 +58,15 @@
     </div>
   </div>
 </main>
-
-<!-- Load Supabase client utility first -->
+<!-- 1. Config (sets window.API_BASE_URL) must be first -->
+<script src="config.js"></script>
+<!-- 2. Supabase CDN library -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- 3. Shared Supabase client helper -->
 <script src="supabaseClient.js"></script>
+<!-- 4. Login form handler (attaches the submit listener) -->
+<script src="login.js"></script>
+
 <script>
 (function () {
   "use strict";
@@ -69,13 +75,14 @@
   /* keep the theme the visitor last chose on the public site */
   try { var t = localStorage.getItem("ab-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
 
-  /* Check if already signed in via sessionStorage */
+  /* Redirect if already signed in */
   try {
     if (sessionStorage.getItem("ab-session")) {
       location.replace("admin.html");
     }
   } catch (e) {}
 
+  /* Show/hide password toggle */
   var peek = $("#peek"), pass = $("#login-password");
   peek.addEventListener("click", function () {
     var show = pass.type === "password";
@@ -83,53 +90,6 @@
     peek.textContent = show ? "Hide" : "Show";
     peek.setAttribute("aria-label", show ? "Hide password" : "Show password");
     pass.focus();
-  });
-
-  function fail(msg) {
-    var box = $("#login-error");
-    box.textContent = msg;
-    box.hidden = false;
-    box.classList.remove("on");
-    void box.offsetWidth;
-    box.classList.add("on");
-  }
-
-  /* Handle Supabase login form submission */
-  $("#login-form").addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const email = document.getElementById("login-email").value.trim();
-    const password = document.getElementById("login-password").value;
-    const errorEl = document.getElementById("login-error");
-    errorEl.hidden = true;
-
-    if (!email || !password) {
-      return fail("Enter both your email and password.");
-    }
-
-    try {
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!res.ok) {
-        throw new Error("Invalid email or password.");
-      }
-
-      const { access_token, refresh_token } = await res.json();
-
-      sessionStorage.setItem("ab-session", JSON.stringify({ access_token, refresh_token }));
-
-      const client = await getSupabaseClient();
-      await client.auth.setSession({ access_token, refresh_token });
-
-      window.location.href = "/admin.html";
-    } catch (err) {
-      fail(err.message || "Something went wrong. Please try again.");
-      $("#login-password").select();
-    }
   });
 
   /* ---- starfield, matching the public site ---- */

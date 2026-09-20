@@ -221,15 +221,15 @@
 
 <div class="a-toast" id="toast" role="status" aria-live="polite"><i></i><span></span></div>
 
+<!-- 1. Config (sets window.API_BASE_URL) must be first -->
+<script src="config.js"></script>
+<!-- 2. Supabase CDN library -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- 3. Shared Supabase client helper -->
+<script src="supabaseClient.js"></script>
+<!-- 4. Content store (exposes window.AB) -->
 <script src="data.js"></script>
+<!-- 5. Dashboard logic -->
 <script src="admin.js"></script>
-<!-- 1. Load the official Supabase JS library from CDN -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-
-<!-- 2. Load your shared client helper -->
-<script src="supabaseClient.js" defer></script>
-<script src="login.js" defer></script>
-<!-- 3. Load your page-specific script -->
-<script src="admin.js" defer></script>
 </body>
 </html>

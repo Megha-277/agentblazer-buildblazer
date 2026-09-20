@@ -14,7 +14,8 @@ let supabaseClient = null;
 async function getSupabaseClient() {
   if (supabaseClient) return supabaseClient;
 
-  const res = await fetch(`${API_BASE_URL}/api/config`);
+  const base = (typeof window.API_BASE_URL !== "undefined" ? window.API_BASE_URL : "");
+  const res = await fetch(`${base}/api/config`);
   if (!res.ok) throw new Error("Could not load Supabase config from backend.");
   const { supabaseUrl, supabaseAnonKey } = await res.json();
 

@@ -11,6 +11,67 @@
   var session = AB.session();
   if (!session) { location.replace("login.html"); return; }
 
+  /* ---------- role gate ----------
+     Fetch the user's role_level from the backend so UI gating is based
+     on server-validated data, not client-controlled state.
+     Role levels: 6=HOD, 5=Faculty, 4=President, 3=Secretary, 2=EventMgr, 1=TechLead
+     Defaults to 0 (no access) until the profile resolves.            */
+  var ROLE_LEVEL = 0;
+  var ROLE_NAME  = "";
+
+  function applyRoleGate() {
+    // Secretary (3): can view events but not add/delete/reorder them
+    if (ROLE_LEVEL < 3) {
+      $$("[data-add='events'], [data-del][data-sec='events'], [data-move][data-sec='events']")
+        .forEach(function(b){ b.hidden = true; b.disabled = true; });
+    }
+    // Event Manager (2): only sees events tab; hide everything else
+    if (ROLE_LEVEL === 2) {
+      $$("#tabs button[data-sec]").forEach(function(b){
+        if (b.dataset.sec !== "events") { b.hidden = true; }
+      });
+      $$(".a-sec:not(#sec-events)").forEach(function(s){ s.hidden = true; });
+    }
+    // Tech Lead (1): no write access at all
+    if (ROLE_LEVEL <= 1) {
+      $$("[data-add], [data-del], [data-move], #sheet-save, #factory, #restore").forEach(function(b){
+        b.hidden = true; b.disabled = true;
+      });
+    }
+    // Secretary (3): members edit-only (no add/delete officers, committee, faculty, guests)
+    if (ROLE_LEVEL === 3) {
+      ["officers","committee","faculty","guests"].forEach(function(sec){
+        $$("[data-add='" + sec + "'], [data-del][data-sec='" + sec + "']").forEach(function(b){
+          b.hidden = true; b.disabled = true;
+        });
+      });
+    }
+  }
+
+  // Pull role from backend; fall back gracefully if /api/profile is unavailable
+  (function fetchRole() {
+    var stored = sessionStorage.getItem("ab-session");
+    if (!stored) return;
+    try {
+      var token = JSON.parse(stored).access_token;
+      if (!token) return;
+      var base = (typeof window.API_BASE_URL !== "undefined" ? window.API_BASE_URL : "");
+      fetch(base + "/api/profile", {
+        headers: { "Authorization": "Bearer " + token }
+      }).then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(profile) {
+          if (!profile) return;
+          ROLE_LEVEL = profile.role_level || 0;
+          ROLE_NAME  = profile.full_name  || profile.role || "";
+          if (ROLE_NAME) {
+            $("#who-name").textContent = ROLE_NAME;
+            $("#who-ini").textContent  = initials(ROLE_NAME);
+          }
+          applyRoleGate();
+        }).catch(function(){});
+    } catch(e) {}
+  })();
+
   /* ---------- theme ---------- */
   function setTheme(t) {
     document.documentElement.dataset.theme = t;
@@ -241,17 +302,34 @@
     editing = { sec: null, index: null };
   }
 
+  /* Caps prevent bloating localStorage and guard against accidental paste of huge blobs. */
+  var MAX_TEXT  = 1000;   // single-line text fields
+  var MAX_AREA  = 5000;   // textarea / description fields
+  var MAX_ITEMS = 30;     // list entries
+
+  function sanitizeStr(s) {
+    /* Remove any embedded <script> / JS event-handler patterns before storing.
+       Content is always rendered via esc() so this is defence-in-depth only. */
+    return String(s).replace(/<script[\s\S]*?<\/script>/gi, "")
+                    .replace(/on\w+\s*=/gi, "");
+  }
+
   function readEditor() {
     var s = SCHEMA[editing.sec], item = editing.draft;
     $$("[data-k]", body).forEach(function (el) {
       if (el.type === "radio") { if (el.checked) set(item, el.dataset.k, el.value); return; }
       var v = el.value;
       if (el.dataset.list) {
-        v = v.split("\n").map(function (x) { return x.trim(); }).filter(Boolean);
+        v = v.split("\n")
+             .map(function (x) { return sanitizeStr(x.trim()).slice(0, MAX_TEXT); })
+             .filter(Boolean)
+             .slice(0, MAX_ITEMS);
       } else if (el.type === "number") {
         v = Math.max(1, Math.min(30, parseInt(v, 10) || 1));
+      } else if (el.tagName === "TEXTAREA") {
+        v = sanitizeStr(v.trim()).slice(0, MAX_AREA);
       } else {
-        v = v.trim();
+        v = sanitizeStr(v.trim()).slice(0, MAX_TEXT);
       }
       set(item, el.dataset.k, v);
     });

@@ -229,13 +229,31 @@
 
   function session() {
     try {
+      // Check the local-auth session token first (set by AB.signIn)
       var raw = sessionStorage.getItem(SESSION_KEY) || localStorage.getItem(SESSION_KEY);
-      return raw ? JSON.parse(raw) : null;
+      if (raw) return JSON.parse(raw);
+
+      // Also accept a Supabase session stored by login.js under "ab-session"
+      var supaRaw = sessionStorage.getItem("ab-session") || localStorage.getItem("ab-session");
+      if (supaRaw) {
+        var supaSession = JSON.parse(supaRaw);
+        // A valid Supabase session has an access_token
+        if (supaSession && supaSession.access_token) {
+          return { user: "supabase", at: Date.now() };
+        }
+      }
+      return null;
     } catch (e) { return null; }
   }
 
   function signOut() {
-    try { sessionStorage.removeItem(SESSION_KEY); localStorage.removeItem(SESSION_KEY); } catch (e) {}
+    try {
+      sessionStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem(SESSION_KEY);
+      // Also clear the Supabase token stored by login.js
+      sessionStorage.removeItem("ab-session");
+      localStorage.removeItem("ab-session");
+    } catch (e) {}
   }
 
   window.AB = {
