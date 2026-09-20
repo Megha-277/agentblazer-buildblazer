@@ -1,0 +1,15 @@
+# Environment / secrets
+.env
+.env.local
+backend/.env
+frontend/.env
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# OS/editor cruft
+.DS_Store
+.vscode/
