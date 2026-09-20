@@ -6,6 +6,7 @@ config endpoint, and privileged server-only actions.
 """
 
 import os
+from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
@@ -14,14 +15,26 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from supabase import create_client, Client
 from dotenv import load_dotenv
+from fastapi.staticfiles import StaticFiles
+frontend_path = os.path.join(os.path.dirname(__file__), "..", "frontend")
 
-load_dotenv()
+# Explicitly load the .env file sitting in the same 'backend' folder as main.py
+env_path = Path(__file__).parent / ".env"
+load_dotenv(dotenv_path=env_path)
 
-SUPABASE_URL = os.environ["SUPABASE_URL"]
-SUPABASE_ANON_KEY = os.environ["SUPABASE_ANON_KEY"]
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
+SUPABASE_ANON_KEY = os.environ.get("SUPABASE_ANON_KEY", "")
+
+if not SUPABASE_URL or not SUPABASE_ANON_KEY:
+    raise ValueError("Missing SUPABASE_URL or SUPABASE_ANON_KEY in backend/.env!")
+
 # service_role key is ONLY loaded here, server-side, for admin-only actions
 # (e.g. inviting new officers). It must NEVER be sent to the browser.
 SUPABASE_SERVICE_ROLE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
+
+# Comma-separated list in .env, e.g.:
+# ALLOWED_ORIGINS=https://agentblazer-club.vercel.app,http://localhost:5500
+ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS", "").split(",")
 
 # Comma-separated list in .env, e.g.:
 # ALLOWED_ORIGINS=https://agentblazer-club.vercel.app,http://localhost:5500
@@ -148,3 +161,5 @@ def invite_officer(request: Request, body: InviteRequest, authorization: str = "
         raise HTTPException(status_code=400, detail=f"Could not create user: {exc}")
 
     return {"status": "invited", "user_id": created.user.id}
+
+app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
