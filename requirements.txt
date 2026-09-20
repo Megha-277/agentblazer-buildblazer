@@ -4,3 +4,4 @@ slowapi
 python-dotenv
 supabase
 pydantic[email]
+python-multipart

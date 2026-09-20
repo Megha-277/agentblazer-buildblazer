@@ -210,3 +210,35 @@
   .a-acts { justify-content: flex-start; }
   .a-top .brand-sub { display: none; }
 }
+
+/* ---------- role badges & approval controls ---------- */
+.badge-status {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 10px; border-radius: var(--radius-pill);
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+}
+.badge-status.pending { color: var(--a3); background: rgba(240, 180, 41, .14); border: 1px solid rgba(240, 180, 41, .4); }
+.badge-status.approved { color: var(--a1); background: rgba(46, 230, 214, .14); border: 1px solid rgba(46, 230, 214, .4); }
+.badge-status.rejected { color: #f87171; background: rgba(239, 68, 68, .14); border: 1px solid rgba(239, 68, 68, .4); }
+
+.a-ico.approve { width: auto; padding: 0 14px; gap: 6px; color: var(--a1); border-color: rgba(46, 230, 214, .4); font-size: 12.5px; font-weight: 700; }
+.a-ico.approve:hover { background: var(--a1-soft); border-color: var(--a1); color: #fff; }
+.a-ico.reject { width: auto; padding: 0 14px; gap: 6px; color: #f87171; border-color: rgba(239, 68, 68, .4); font-size: 12.5px; font-weight: 700; }
+.a-ico.reject:hover { background: rgba(239, 68, 68, .2); border-color: #ef4444; color: #fff; }
+
+.role-select {
+  padding: 6px 10px; border-radius: 8px; font-size: 12.5px; font-weight: 600;
+  background: var(--bg-2); border: 1px solid var(--hair-2); color: var(--ink);
+  outline: none; cursor: pointer;
+}
+.role-select:focus { border-color: var(--a1); }
+
+.upload-box {
+  display: flex; align-items: center; gap: 12px; margin-top: 6px;
+}
+.upload-btn {
+  padding: 8px 16px; border-radius: var(--radius-md); font-size: 12.5px; font-weight: 600;
+  background: var(--card-2); border: 1px dashed var(--hair-2); color: var(--a1);
+  cursor: pointer; transition: all var(--t-fast) var(--ease);
+}
+.upload-btn:hover { border-color: var(--a1); background: var(--a1-soft); }

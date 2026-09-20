@@ -77,6 +77,18 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6L12 16.8 6.6 19.6l1.2-6L3.3 9.4l6.1-.8L12 3Z"/></svg>
         Guests of honour <span class="n" data-count="guests">0</span>
       </button>
+      <button data-sec="approvals" id="tab-approvals">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
+        Approvals <span class="n" data-count="approvals" id="count-approvals">0</span>
+      </button>
+      <button data-sec="members" id="tab-members">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Members <span class="n" data-count="members" id="count-members">0</span>
+      </button>
+      <button data-sec="submissions" id="tab-submissions">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Enquiries <span class="n" data-count="submissions" id="count-submissions">0</span>
+      </button>
       <button data-sec="settings">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2V21a2 2 0 1 1-4 0v-.1A1.7 1.7 0 0 0 7 19.4a1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0-1.2-2.9H1a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 2.6 7a1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.7 1.7 0 0 0 7 2.6h.1A1.7 1.7 0 0 0 8.3 1V1a2 2 0 1 1 4 0" transform="scale(.86) translate(2 2)"/></svg>
         Settings
@@ -166,6 +178,42 @@
       <div class="a-list" id="list-guests"></div>
     </section>
 
+    <!-- APPROVALS QUEUE (Faculty / HOD only) -->
+    <section class="a-sec" id="sec-approvals">
+      <div class="a-head">
+        <div>
+          <h2>Student <em>Approval Queue</em></h2>
+          <p>Review and verify pending student onboarding applications (@sjec.ac.in).</p>
+        </div>
+        <button class="btn btn-2" id="btn-refresh-approvals">Refresh Queue</button>
+      </div>
+      <div class="a-list" id="list-approvals"></div>
+    </section>
+
+    <!-- MEMBER DIRECTORY & ROLE MANAGEMENT -->
+    <section class="a-sec" id="sec-members">
+      <div class="a-head">
+        <div>
+          <h2>Member Directory <em>&amp; Role Hierarchy</em></h2>
+          <p>View active members, assign role levels (1–6), or manage alumni rollover overrides.</p>
+        </div>
+        <button class="btn btn-2" id="btn-refresh-members">Refresh Members</button>
+      </div>
+      <div class="a-list" id="list-members"></div>
+    </section>
+
+    <!-- CONTACT ENQUIRIES INBOX -->
+    <section class="a-sec" id="sec-submissions">
+      <div class="a-head">
+        <div>
+          <h2>Contact <em>Submissions &amp; Outreach</em></h2>
+          <p>Messages received from students, alumni, and prospective partners via the contact form.</p>
+        </div>
+        <button class="btn btn-2" id="btn-refresh-submissions">Refresh Inbox</button>
+      </div>
+      <div class="a-list" id="list-submissions"></div>
+    </section>
+
     <!-- SETTINGS -->
     <section class="a-sec" id="sec-settings">
       <div class="a-head">
@@ -220,6 +268,7 @@
 </aside>
 
 <div class="a-toast" id="toast" role="status" aria-live="polite"><i></i><span></span></div>
+<input type="file" id="image-upload-input" accept=".png,.jpg,.jpeg,.webp" hidden>
 
 <!-- 1. Config (sets window.API_BASE_URL) must be first -->
 <script src="config.js"></script>

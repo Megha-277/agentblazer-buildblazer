@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="violet">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Join the Club &amp; Contact Us — AgentBlazer Club | SJEC CSE</title>
+<meta name="description" content="Apply for student membership with your institutional @sjec.ac.in email or reach out to the CSE department and AgentBlazer Club coordinators at St Joseph Engineering College.">
+<meta name="keywords" content="AgentBlazer Membership, Join AgentBlazer, SJEC Student Club, CSE Contact, Engineering Admissions SJEC">
+<meta name="author" content="Department of Computer Science &amp; Engineering, SJEC">
+<link rel="canonical" href="contact.html">
+
+<!-- OpenGraph / Social Meta -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Join the Club &amp; Contact Us — AgentBlazer Club | SJEC CSE">
+<meta property="og:description" content="Apply for student membership or reach out to the CSE department and club coordinators.">
+<meta property="og:url" content="contact.html">
+<meta property="og:image" content="assets/logo.png">
+
+<!-- Twitter Card Meta -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Join AgentBlazer Club — SJEC CSE">
+<meta name="twitter:description" content="Join the collegiate AI initiative at St Joseph Engineering College.">
+<meta name="twitter:image" content="assets/logo.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:ital,wght@0,500;0,600;1,400;1,500;1,600&display=swap" rel="stylesheet">
+<link rel="icon" href="assets/logo-mark.png" type="image/png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ AMBIENT ============ -->
+<div class="ambient" aria-hidden="true"></div>
+<canvas id="stars" aria-hidden="true"></canvas>
+<canvas id="trail" aria-hidden="true"></canvas>
+<div class="cur-ring" aria-hidden="true"></div>
+<div class="cur-dot" aria-hidden="true"></div>
+
+<!-- ============ APP ============ -->
+<div id="app" class="on">
+
+<header class="hdr">
+  <div class="wrap hdr-in">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 2.3 20.5 7v10L12 21.7 3.5 17V7L12 2.3Z" stroke="url(#bg1)" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M12 7.2 16.6 9.8v5.2L12 17.6 7.4 15V9.8L12 7.2Z" fill="url(#bg2)" opacity=".55"/>
+          <circle cx="12" cy="12.4" r="1.9" fill="#fff"/>
+          <defs>
+            <linearGradient id="bg1" x1="3" y1="2" x2="21" y2="22"><stop stop-color="#2ee6d6"/><stop offset="1" stop-color="#a855f7"/></linearGradient>
+            <linearGradient id="bg2" x1="7" y1="7" x2="17" y2="18"><stop stop-color="#38bdf8"/><stop offset="1" stop-color="#a855f7"/></linearGradient>
+          </defs>
+        </svg>
+      </span>
+      <span>
+        <span class="brand-name">Agent<span class="grad">Blazer</span><em>collective</em></span>
+        <span class="brand-sub">Department of Computer Science &amp; Engineering</span>
+      </span>
+    </a>
+
+    <button class="burger" id="burger" aria-label="Toggle navigation" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="nav" id="nav" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="about.html">About Us</a>
+      <a href="events.html">Events &amp; Workshops</a>
+      <a href="team.html">Our Team</a>
+      <a href="contact.html" class="on"><i class="pip"></i>Join / Contact</a>
+    </nav>
+
+    <div class="themes" role="group" aria-label="Colour theme">
+      <button class="on" data-theme="violet" aria-pressed="true"><i>⚡</i><span>Violet</span></button>
+      <button data-theme="inferno" aria-pressed="false"><i>🔥</i><span>Inferno</span></button>
+      <button data-theme="frost" aria-pressed="false"><i>❄️</i><span>Frost</span></button>
+    </div>
+  </div>
+</header>
+
+<main class="page-view">
+  <div class="wrap pad">
+    <div class="join" style="padding-top:0">
+      <div class="join-aura" aria-hidden="true"></div>
+      <div class="join-mark">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 2.3 20.5 7v10L12 21.7 3.5 17V7L12 2.3Z" stroke="url(#jg)" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="M12 7.2 16.6 9.8v5.2L12 17.6 7.4 15V9.8L12 7.2Z" fill="url(#jg)" opacity=".4"/>
+          <circle cx="12" cy="12.4" r="1.7" fill="#fff"/>
+          <defs><linearGradient id="jg" x1="3" y1="2" x2="21" y2="22"><stop stop-color="#2ee6d6"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs>
+        </svg>
+      </div>
+      <span class="eyebrow"><i class="dot"></i>Membership Intake &amp; Inquiries · Academic Year 2025–2026</span>
+      <h1 class="display">Ready to Build with<span class="it inline"> Autonomous Intelligence?</span></h1>
+      <p class="lede">Join the AgentBlazer Club at SJEC CSE. Collaborate with peers, gain hands-on access to Salesforce Trailhead developer orgs, and shape real AI agent projects.</p>
+
+      <!-- Workflow Switcher Tabs -->
+      <div class="dual-tabs" role="tablist">
+        <button class="on" id="tab-signup" type="button" role="tab" aria-selected="true">Student Membership Intake</button>
+        <button id="tab-contact" type="button" role="tab" aria-selected="false">Contact CSE Department</button>
+      </div>
+
+      <!-- WORKFLOW 1: STUDENT MEMBERSHIP INTAKE FORM -->
+      <div class="form-card glass" id="box-signup" style="width:100%">
+        <div style="text-align:left;margin-bottom:18px">
+          <h2 style="font-size:22px;font-weight:700">Student Membership Application</h2>
+          <p style="font-size:13.5px;color:var(--ink-3);margin-top:4px">
+            Exclusive to St Joseph Engineering College students. Institutional <strong style="color:var(--a1)">@sjec.ac.in</strong> email is mandatory.
+          </p>
+        </div>
+
+        <form id="signup-form" autocomplete="off" novalidate>
+          <!-- Honeypot protection field -->
+          <input type="text" name="b_hp_check" id="signup-hp" class="hp-field" tabindex="-1" autocomplete="off">
+
+          <div class="form-grid two-col">
+            <div class="form-field full-width">
+              <label for="reg-name">Full Name *</label>
+              <input type="text" id="reg-name" name="full_name" placeholder="e.g. Alex D'Souza" required maxlength="100">
+            </div>
+
+            <div class="form-field full-width">
+              <label for="reg-email">SJEC Institutional Email *</label>
+              <input type="email" id="reg-email" name="email" placeholder="e.g. 26d89.alex@sjec.ac.in" required maxlength="120">
+              <span class="help-text">Must be an institutional address ending with <code>@sjec.ac.in</code>.</span>
+            </div>
+
+            <div class="form-field">
+              <label for="reg-batch">Expected Graduation Year</label>
+              <input type="number" id="reg-batch" name="expected_graduation_year" min="2025" max="2035" placeholder="Auto-calculated (e.g. 2030)">
+              <span class="help-text" id="batch-hint">Auto-parsed from email format (e.g. 26... &rarr; 2030)</span>
+            </div>
+
+            <div class="form-field">
+              <label for="reg-password">Create Account Password *</label>
+              <input type="password" id="reg-password" name="password" minlength="8" placeholder="At least 8 characters" required>
+            </div>
+          </div>
+
+          <div class="form-status" id="signup-status" role="alert"></div>
+
+          <button type="submit" class="btn btn-1" id="signup-btn" style="margin-top:24px;width:100%;justify-content:center">
+            Submit Membership Application
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+          </button>
+        </form>
+      </div>
+
+      <!-- WORKFLOW 2: CONTACT CSE DEPARTMENT FORM -->
+      <div class="form-card glass" id="box-contact" style="width:100%;display:none">
+        <div style="text-align:left;margin-bottom:18px">
+          <h2 style="font-size:22px;font-weight:700">General Enquiry &amp; Mentorship Outreach</h2>
+          <p style="font-size:13.5px;color:var(--ink-3);margin-top:4px">
+            Reach out to our faculty coordinators and student officers regarding workshops, guest sessions, or industry collaborations.
+          </p>
+        </div>
+
+        <form id="contact-form" autocomplete="off" novalidate>
+          <!-- Honeypot protection field -->
+          <input type="text" name="b_hp_check" id="contact-hp" class="hp-field" tabindex="-1" autocomplete="off">
+
+          <div class="form-grid two-col">
+            <div class="form-field">
+              <label for="c-name">Your Name *</label>
+              <input type="text" id="c-name" name="name" placeholder="Your full name" required maxlength="100">
+            </div>
+
+            <div class="form-field">
+              <label for="c-email">Contact Email *</label>
+              <input type="email" id="c-email" name="email" placeholder="you@example.com" required maxlength="120">
+            </div>
+
+            <div class="form-field full-width">
+              <label for="c-subject">Subject</label>
+              <input type="text" id="c-subject" name="subject" placeholder="e.g. Workshop Collaboration / Lab Query" maxlength="150">
+            </div>
+
+            <div class="form-field full-width">
+              <label for="c-msg">Message *</label>
+              <textarea id="c-msg" name="message" placeholder="How can the AgentBlazer Club assist you?" required maxlength="2000"></textarea>
+            </div>
+          </div>
+
+          <div class="form-status" id="contact-status" role="alert"></div>
+
+          <button type="submit" class="btn btn-1" id="contact-btn" style="margin-top:24px;width:100%;justify-content:center">
+            Send Message to Coordinators
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+          </button>
+        </form>
+      </div>
+
+      <!-- Department Info Block -->
+      <div class="dept glass" style="margin-top:20px">
+        <span class="ini">CSE</span>
+        <div>
+          <h4>Department of Computer Science &amp; Engineering</h4>
+          <p>St Joseph Engineering College, Vamanjoor<br>Mangaluru, Karnataka – 575028, India</p>
+          <p>Direct enquiries: <a href="mailto:agentblazer.cse@sjec.ac.in">agentblazer.cse@sjec.ac.in</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <div class="foot-brand">
+          <span class="brand-mark">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 2.3 20.5 7v10L12 21.7 3.5 17V7L12 2.3Z" stroke="url(#fg)" stroke-width="1.5" stroke-linejoin="round"/>
+              <circle cx="12" cy="12.2" r="2" fill="url(#fg)"/>
+              <defs><linearGradient id="fg" x1="3" y1="2" x2="21" y2="22"><stop stop-color="#2ee6d6"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs>
+            </svg>
+          </span>
+          <b>AgentBlazer Club</b>
+        </div>
+        <div class="foot-addr">
+          <b>Department of Computer Science &amp; Engineering</b>
+          <span>St Joseph Engineering College, Vamanjoor, Mangaluru, Karnataka – 575028, India</span>
+        </div>
+      </div>
+      <div class="foot-col">
+        <h5>Navigation</h5>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About &amp; Charter</a></li>
+          <li><a href="events.html">Workshops &amp; Contests</a></li>
+          <li><a href="team.html">Leadership &amp; Core Team</a></li>
+          <li><a href="contact.html">Membership &amp; Enquiries</a></li>
+          <li><a href="login.html">Club Admin Sign-in</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Affiliations</h5>
+        <div class="affils">
+          <span class="chip">SJEC CSE</span>
+          <span class="chip c1">Agentforce</span>
+          <span class="chip c2">Trailblazer</span>
+        </div>
+        <p class="foot-note">Empowered by faculty guidance and student leadership at St Joseph Engineering College.</p>
+      </div>
+    </div>
+    <div class="foot-btm">
+      <span>© 2025–2026 AgentBlazer Club, St Joseph Engineering College. All rights reserved.</span>
+      <span><em>Academic Year 2025–2026</em> &nbsp;·&nbsp; Autonomous AI &amp; Agentic Systems</span>
+    </div>
+  </div>
+</footer>
+
+</div><!-- /#app -->
+
+<!-- hover popup -->
+<div class="pop" id="pop" aria-hidden="true"></div>
+
+<!-- Scripts -->
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabaseClient.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js" defer></script>
+<script src="data.js" defer></script>
+<script src="dataService.js" defer></script>
+<script src="script.js" defer></script>
+</body>
+</html>

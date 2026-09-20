@@ -3,23 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>AgentBlazer Club — Autonomous AI &amp; Salesforce Collective | SJEC CSE</title>
-<meta name="description" content="Pioneering autonomous and agentic AI systems at St Joseph Engineering College, Mangaluru. Student-led laboratory shaping tomorrow's software engineers through open-source AI tooling and Salesforce Trailblazer community synergy.">
-<meta name="keywords" content="AgentBlazer, SJEC, Computer Science, Autonomous AI, Agentforce, Salesforce Trailblazer, Engineering College Mangaluru, Student Club">
+<title>Workshops, Contests &amp; Masterclasses — AgentBlazer Club | SJEC CSE</title>
+<meta name="description" content="Discover hands-on workshops, algorithmic hackathons, and autonomous agent masterclasses organized by AgentBlazer Club at SJEC CSE.">
+<meta name="keywords" content="AgentBlazer Events, Hackathons SJEC, CSE Workshops, Prompt Ops, Agentforce Deep Dive, St Joseph Engineering College">
 <meta name="author" content="Department of Computer Science &amp; Engineering, SJEC">
-<link rel="canonical" href="index.html">
+<link rel="canonical" href="events.html">
 
 <!-- OpenGraph / Social Meta -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="AgentBlazer Club — Autonomous AI &amp; Salesforce Collective | SJEC CSE">
-<meta property="og:description" content="Student-led autonomous AI and Salesforce Trailblazer collective at St Joseph Engineering College, Mangaluru.">
-<meta property="og:url" content="index.html">
+<meta property="og:title" content="Workshops, Contests &amp; Masterclasses — AgentBlazer Club | SJEC CSE">
+<meta property="og:description" content="Hands-on technical deep dives, algorithmic challenges, and real-world system deployments with seasoned engineers.">
+<meta property="og:url" content="events.html">
 <meta property="og:image" content="assets/logo.png">
 
 <!-- Twitter Card Meta -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="AgentBlazer Club — SJEC CSE">
-<meta name="twitter:description" content="Pioneering autonomous and agentic AI systems at St Joseph Engineering College, Mangaluru.">
+<meta name="twitter:title" content="Workshops &amp; Contests — AgentBlazer Club | SJEC CSE">
+<meta name="twitter:description" content="Hands-on technical deep dives and algorithmic challenges at St Joseph Engineering College, Mangaluru.">
 <meta name="twitter:image" content="assets/logo.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -37,17 +37,8 @@
 <div class="cur-ring" aria-hidden="true"></div>
 <div class="cur-dot" aria-hidden="true"></div>
 
-<!-- ============ SPLASH ============ -->
-<div id="splash" role="button" tabindex="0" aria-label="Enter the AgentBlazer Club site">
-  <video id="splash-video" autoplay muted playsinline preload="auto">
-    <source src="assets/splash-video.mp4" type="video/mp4">
-  </video>
-  <div class="splash-vig" aria-hidden="true"></div>
-  <span class="tap">Tap to continue</span>
-</div>
-
 <!-- ============ APP ============ -->
-<div id="app">
+<div id="app" class="on">
 
 <header class="hdr">
   <div class="wrap hdr-in">
@@ -74,9 +65,9 @@
     </button>
 
     <nav class="nav" id="nav" aria-label="Primary">
-      <a href="index.html" class="on"><i class="pip"></i>Home</a>
+      <a href="index.html">Home</a>
       <a href="about.html">About Us</a>
-      <a href="events.html">Events &amp; Workshops</a>
+      <a href="events.html" class="on"><i class="pip"></i>Events &amp; Workshops</a>
       <a href="team.html">Our Team</a>
       <a href="contact.html">Join / Contact</a>
     </nav>
@@ -90,81 +81,39 @@
 </header>
 
 <main class="page-view">
+  <div class="wrap pad">
+    <div class="ev-head">
+      <span class="eyebrow up"><i class="dot"></i>Workshops &amp; live sessions · Academic Year 2025–2026</span>
+      <h1 class="display">Workshops, Contests<span class="it inline"> &amp; Masterclasses</span></h1>
+      <p class="lede">Hands-on technical deep dives, algorithmic challenges, and real-world system deployments with seasoned engineers. All events fetched dynamically from the database.</p>
+    </div>
 
-<!-- HERO -->
-<section class="wrap">
-  <div class="hero">
-    <div class="hero-copy">
-      <span class="eyebrow"><i class="dot"></i>Collegiate AI Initiative · St Joseph Engineering College</span>
-      <h1 class="display">Pioneering Autonomous<span class="it">&amp; Agentic AI Systems</span></h1>
-      <p class="hero-meta"><em>Department of Computer Science &amp; Engineering</em><span>·</span>St Joseph Engineering College, Mangaluru</p>
-      <p class="lede">A dedicated student-led laboratory shaping tomorrow's software engineers through autonomous agent architectures, open-source AI tooling, collaborative workshops, and premier Salesforce Trailblazer community synergy.</p>
-      <div class="hero-cta">
-        <a class="btn btn-1 mag" href="events.html">Explore workshops &amp; events
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
-        </a>
-        <a class="btn btn-2 mag" href="about.html">Read club charter
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5"/></svg>
-        </a>
+    <!-- Dynamic Events Grid -->
+    <div class="events" id="events">
+      <!-- Dynamically populated from Supabase via DataService -->
+    </div>
+
+    <!-- Curricular Program Outcomes -->
+    <div class="po glass" style="margin-top:clamp(40px,5vw,70px)">
+      <div class="po-lead">
+        <b>Curricular integration</b>
+        <h3>Program Outcomes Mapping</h3>
+        <p>Alignment with college engineering competencies and NBA accreditation criteria.</p>
       </div>
-    </div>
-
-    <div class="emblem-wrap">
-      <div class="emblem" id="emblem">
-        <picture>
-          <source srcset="assets/logo.webp" type="image/webp">
-          <img src="assets/logo.png" alt="AgentBlazer Club Emblem" width="300" height="350">
-        </picture>
+      <div class="po-item">
+        <b>PO4 &amp; PO5 · Modern Tool Usage</b>
+        <p>Complex algorithmic problem analysis with modern toolkits (Groq, Agentforce, LLaMA, LangChain).</p>
       </div>
-      <div class="emblem-word">AgentBlazer<small>CLUB</small></div>
-    </div>
-  </div>
-
-  <div class="stats glass tilt">
-    <div>
-      <div class="stat-n">8+</div>
-      <div class="stat-l">Workshops &amp; challenges</div>
-    </div>
-    <div>
-      <div class="stat-n">500+</div>
-      <div class="stat-l">Engineering students reached</div>
-    </div>
-    <div>
-      <div class="stat-n">Salesforce</div>
-      <div class="stat-badge"><span class="tag t1">Community Partner</span></div>
-      <div class="stat-l">Active Trailblazer membership</div>
-    </div>
-  </div>
-</section>
-
-<!-- HIGHLIGHTS OVERVIEW -->
-<section class="wrap pad">
-  <div class="sec-h"><i class="bar"></i><h2>Featured Highlights <em>&amp; Upcoming Tracks</em></h2><a href="events.html" class="aside">View all events →</a></div>
-  
-  <div class="events" id="featured-events">
-    <!-- Dynamically loaded from Supabase via DataService -->
-  </div>
-
-  <div style="margin-top:clamp(40px,5vw,70px);text-align:center">
-    <div class="launch tilt" style="text-align:left">
-      <div>
-        <span class="eyebrow"><i class="dot"></i>Autonomous Intelligence Laboratory</span>
-        <h2>Shaping the next generation of <em>Agentic Engineers</em></h2>
-        <p>From prompt engineering and multi-agent coordination to enterprise Salesforce Agentforce workflows, we equip SJEC students with real-world, industry-standard artificial intelligence skillsets.</p>
-        <div style="margin-top:20px;display:flex;gap:14px;flex-wrap:wrap">
-          <a class="btn btn-1" href="contact.html">Join as Student Member</a>
-          <a class="btn btn-2" href="about.html">Learn About Our Mission</a>
-        </div>
+      <div class="po-item">
+        <b>PO6 &amp; PO7 · Societal Context</b>
+        <p>Ethical implications, data privacy, and responsible deployment of LLM and SecOps frameworks.</p>
       </div>
-      <div class="launch-date">
-        <b>Inaugural Cohort</b>
-        <strong>August 25, 2025</strong>
-        <div class="row"><span>SJEC CSE Dept</span><span>Agentforce Lab</span></div>
+      <div class="po-item">
+        <b>PO8 &amp; PO11 · Ethics &amp; Project Management</b>
+        <p>Collaborative team execution, code hygiene, open-source PR reviews, and competitive event governance.</p>
       </div>
     </div>
   </div>
-</section>
-
 </main>
 
 <!-- ============ FOOTER ============ -->
