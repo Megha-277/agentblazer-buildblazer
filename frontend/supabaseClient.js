@@ -1,5 +1,6 @@
 // supabaseClient.js — shared across index.html, admin.html, login.html
-// Loaded as a plain <script> (no build step needed):
+// Loaded as a plain <script> (no build step needed), AFTER config.js:
+//   <script src="config.js" defer></script>
 //   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 //   <script src="supabaseClient.js" defer></script>
 //   <script src="your-page-script.js" defer></script>
@@ -13,7 +14,7 @@ let supabaseClient = null;
 async function getSupabaseClient() {
   if (supabaseClient) return supabaseClient;
 
-  const res = await fetch("/api/config");
+  const res = await fetch(`${API_BASE_URL}/api/config`);
   if (!res.ok) throw new Error("Could not load Supabase config from backend.");
   const { supabaseUrl, supabaseAnonKey } = await res.json();
 
