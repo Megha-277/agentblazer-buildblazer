@@ -1,3 +1,6 @@
 fastapi
-uvicorn
+uvicorn[standard]
 slowapi
+python-dotenv
+supabase
+pydantic[email]

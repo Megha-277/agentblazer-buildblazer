@@ -30,23 +30,22 @@
     <h1>Sign in to the <em>club dashboard</em></h1>
     <p class="sub">Update events, add or remove members, and keep the AgentBlazer Club site current. No coding needed.</p>
 
-    <form class="auth-form" id="form" autocomplete="on">
-      <div class="a-alert" id="err" role="alert"></div>
+    <!-- Updated IDs to match the Supabase implementation logic -->
+    <form class="auth-form" id="login-form" autocomplete="on">
+      <div class="a-alert" id="login-error" role="alert" hidden></div>
 
       <div class="f">
-        <label for="user">Username</label>
-        <input id="user" name="username" type="text" autocomplete="username" placeholder="admin" required>
+        <label for="login-email">Email</label>
+        <input id="login-email" name="email" type="email" autocomplete="email" placeholder="admin@agentblazer.com" required>
       </div>
 
       <div class="f">
-        <label for="pass">Password</label>
+        <label for="login-password">Password</label>
         <div class="f-pw">
-          <input id="pass" name="password" type="password" autocomplete="current-password" placeholder="Your password" required>
+          <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="Your password" required>
           <button type="button" id="peek" aria-label="Show password">Show</button>
         </div>
       </div>
-
-      <label class="f-check"><input type="checkbox" id="remember"> Keep me signed in on this device</label>
 
       <button class="btn btn-1" type="submit" style="justify-content:center">Sign in
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
@@ -55,12 +54,13 @@
 
     <div class="auth-foot">
       <a href="index.html">Back to the club site</a>
-      <span id="hint">First time? Use <b style="color:var(--ink-2)">admin</b> / <b style="color:var(--ink-2)">agentblazer@2026</b></span>
+      <span id="hint">Powered by Supabase Auth</span>
     </div>
   </div>
 </main>
 
-<script src="data.js"></script>
+<!-- Load Supabase client utility first -->
+<script src="supabaseClient.js"></script>
 <script>
 (function () {
   "use strict";
@@ -69,13 +69,14 @@
   /* keep the theme the visitor last chose on the public site */
   try { var t = localStorage.getItem("ab-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
 
-  /* already signed in -> go straight through */
-  if (AB.session()) location.replace("admin.html");
+  /* Check if already signed in via sessionStorage */
+  try {
+    if (sessionStorage.getItem("ab-session")) {
+      location.replace("admin.html");
+    }
+  } catch (e) {}
 
-  /* hide the starter-credentials hint once the password has been changed */
-  try { if (localStorage.getItem("ab-admin-v1")) $("#hint").textContent = "Forgot your password? Ask the club tech lead to reset it."; } catch (e) {}
-
-  var peek = $("#peek"), pass = $("#pass");
+  var peek = $("#peek"), pass = $("#login-password");
   peek.addEventListener("click", function () {
     var show = pass.type === "password";
     pass.type = show ? "text" : "password";
@@ -85,22 +86,49 @@
   });
 
   function fail(msg) {
-    var box = $("#err");
+    var box = $("#login-error");
     box.textContent = msg;
+    box.hidden = false;
     box.classList.remove("on");
     void box.offsetWidth;
     box.classList.add("on");
   }
 
-  $("#form").addEventListener("submit", function (e) {
+  /* Handle Supabase login form submission */
+  $("#login-form").addEventListener("submit", async (e) => {
     e.preventDefault();
-    var u = $("#user").value.trim(), p = $("#pass").value;
-    if (!u || !p) return fail("Enter both your username and password.");
-    if (AB.signIn(u, p, $("#remember").checked)) {
-      location.href = "admin.html";
-    } else {
-      fail("That username and password don’t match. Check for typos and try again.");
-      $("#pass").select();
+
+    const email = document.getElementById("login-email").value.trim();
+    const password = document.getElementById("login-password").value;
+    const errorEl = document.getElementById("login-error");
+    errorEl.hidden = true;
+
+    if (!email || !password) {
+      return fail("Enter both your email and password.");
+    }
+
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Invalid email or password.");
+      }
+
+      const { access_token, refresh_token } = await res.json();
+
+      sessionStorage.setItem("ab-session", JSON.stringify({ access_token, refresh_token }));
+
+      const client = await getSupabaseClient();
+      await client.auth.setSession({ access_token, refresh_token });
+
+      window.location.href = "/admin.html";
+    } catch (err) {
+      fail(err.message || "Something went wrong. Please try again.");
+      $("#login-password").select();
     }
   });
 
@@ -137,7 +165,7 @@
         var o = stars[j], dx = s.x - o.x, dy = s.y - o.y, dd = dx * dx + dy * dy;
         if (dd < 19000) {
           sx.globalAlpha = (1 - dd / 19000) * .5; sx.strokeStyle = lin; sx.lineWidth = .7;
-          sx.beginPath(); sx.moveTo(s.x, s.y); sx.lineTo(o.x, o.y); sx.stroke();
+            sx.beginPath(); sx.moveTo(s.x, s.y); sx.lineTo(o.x, o.y); sx.stroke();
         }
       }
     }
