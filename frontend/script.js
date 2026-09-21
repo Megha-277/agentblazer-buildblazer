@@ -318,7 +318,7 @@ function setupForms() {
               <div><strong>Next Step:</strong> Faculty coordinators will verify your institutional status.</div>
             </div>
             <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
-              <a href="login.html" class="btn btn-1" style="font-size:13.5px;padding:9px 18px;text-decoration:none;display:inline-flex;align-items:center;gap:6px">
+              <a href="/dashboard/login.html" class="btn btn-1" style="font-size:13.5px;padding:9px 18px;text-decoration:none;display:inline-flex;align-items:center;gap:6px">
                 Go to Club Sign In
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
               </a>
@@ -392,7 +392,7 @@ function setupForms() {
             </div>
             ${isApp ? `
               <div style="margin-top:12px">
-                <a href="login.html" class="btn btn-1" style="font-size:13px;padding:8px 16px;text-decoration:none">Sign in to Member Portal &rarr;</a>
+                <a href="/dashboard/login.html" class="btn btn-1" style="font-size:13px;padding:8px 16px;text-decoration:none">Sign in to Member Portal &rarr;</a>
               </div>
             ` : ''}
           </div>
@@ -483,27 +483,58 @@ const app = $("#app");
 
 if (splash && app) {
   const vid = $("#splash-video");
+
   function dismissSplash() {
+    if (splash._dismissed) return;
+    splash._dismissed = true;
     splash.style.transition = "opacity .6s ease";
     splash.style.opacity = "0";
     setTimeout(() => {
       splash.style.display = "none";
       app.classList.add("on");
+      if (vid) { vid.pause(); }
     }, 600);
   }
+
   splash.addEventListener("click", dismissSplash);
   splash.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") dismissSplash(); });
+
   if (vid) {
-    vid.addEventListener("ended", dismissSplash);
+    // Segment loop: play intro (0→end), then loop the phoenix segment (5s→9.9s) continuously.
+    // User must explicitly click "Tap to continue" — video ending does NOT auto-dismiss.
+    const LOOP_START = 5.0;   // phoenix segment start (seconds)
+    const LOOP_END   = 9.85;  // seek back just before hard end to avoid black frame
+
+    // Attempt autoplay; browsers may block until user interaction
+    const tryPlay = () => vid.play().catch(() => {});
+    tryPlay();
+    // Retry on first pointer interaction in case autoplay was blocked
+    splash.addEventListener("pointerdown", tryPlay, { once: true });
+    // Resume if the tab comes back into focus (mobile background tab)
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden && !splash._dismissed) tryPlay();
+    });
+
+    let introFinished = false;
+    vid.addEventListener("timeupdate", () => {
+      if (vid.currentTime >= LOOP_START) introFinished = true;
+      if (introFinished && vid.currentTime >= LOOP_END) {
+        vid.currentTime = LOOP_START;
+        tryPlay();
+      }
+    });
+
+    // If video is unavailable (network/codec) show the site after 4 s
+    setTimeout(() => {
+      if (!app.classList.contains("on") && vid.readyState === 0) {
+        app.classList.add("on");
+      }
+    }, 4000);
+  } else {
+    // No video element on this page — show immediately
+    app.classList.add("on");
   }
-  // Auto-reveal if video fails or is blocked
-  setTimeout(() => {
-    if (app && !app.classList.contains("on")) {
-      app.classList.add("on");
-    }
-  }, 4000);
 } else if (app) {
-  // Non-home pages display immediately
   app.classList.add("on");
 }
 
@@ -750,10 +781,139 @@ window.addEventListener("scroll", hidePop, { passive: true });
 function initApp() {
   populatePageData();
   setupForms();
+  populateAnnouncements();
+  setupSubscribeForm();
 }
 
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", initApp);
 } else {
   initApp();
+}
+
+/* ============================================================
+   ANNOUNCEMENTS (announcements.html + homepage strip)
+   ============================================================ */
+
+const CATEGORY_LABELS = {
+  general: "General", competition: "Competition", registration: "Registration",
+  workshop: "Workshop", achievement: "Achievement", notice: "Notice",
+};
+
+function fmtAnnDate(iso) {
+  try { return new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }); }
+  catch (_) { return iso || ""; }
+}
+
+function annCardHTML(a) {
+  const cat = a.category || "general";
+  return `<article class="ann-card${a.is_pinned ? " pinned" : ""}">
+    <div class="ann-meta">
+      ${a.is_pinned ? `<span class="ann-badge pinned-badge">📌 Pinned</span>` : ""}
+      <span class="ann-badge cat">${esc(CATEGORY_LABELS[cat] || cat)}</span>
+      <span class="ann-date">${fmtAnnDate(a.published_at || a.created_at)}</span>
+    </div>
+    <h3 class="ann-title">${esc(a.title)}</h3>
+    <p class="ann-body">${esc(a.body)}</p>
+  </article>`;
+}
+
+async function populateAnnouncements() {
+  // Full page list (announcements.html)
+  const fullList = $("#ann-list");
+  if (fullList && window.DataService) {
+    const filterBtns = $$("#ann-filter button");
+    let allAnns = [];
+    let activeFilter = "all";
+
+    function renderFiltered() {
+      const filtered = activeFilter === "all" ? allAnns : allAnns.filter(a => a.category === activeFilter);
+      if (!filtered.length) {
+        fullList.innerHTML = `<div class="a-empty" style="grid-column:1/-1"><b>No announcements yet</b><span>Check back soon for updates from the club.</span></div>`;
+        return;
+      }
+      // Pinned first, then by date
+      const sorted = [...filtered].sort((a, b) => {
+        if (a.is_pinned && !b.is_pinned) return -1;
+        if (!a.is_pinned && b.is_pinned) return 1;
+        return new Date(b.published_at || b.created_at) - new Date(a.published_at || a.created_at);
+      });
+      fullList.innerHTML = sorted.map(annCardHTML).join("");
+    }
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        activeFilter = btn.dataset.cat;
+        filterBtns.forEach(b => b.classList.toggle("on", b === btn));
+        renderFiltered();
+      });
+    });
+
+    try {
+      allAnns = await DataService.getAnnouncements();
+      renderFiltered();
+    } catch (err) {
+      fullList.innerHTML = `<div class="a-empty" style="grid-column:1/-1"><b>Could not load announcements</b></div>`;
+    }
+  }
+
+  // Homepage strip (index.html — show 3 most recent, pinned first)
+  const strip = $("#homepage-announcements");
+  if (strip && window.DataService) {
+    try {
+      const anns = await DataService.getAnnouncements();
+      if (!anns.length) { strip.innerHTML = `<p style="color:var(--ink-4);font-size:14px">No announcements yet.</p>`; return; }
+      const sorted = [...anns].sort((a, b) => {
+        if (a.is_pinned && !b.is_pinned) return -1;
+        if (!a.is_pinned && b.is_pinned) return 1;
+        return new Date(b.published_at || b.created_at) - new Date(a.published_at || a.created_at);
+      }).slice(0, 3);
+      strip.innerHTML = sorted.map(a => `
+        <article class="ann-card${a.is_pinned ? " pinned" : ""}" style="margin-bottom:14px">
+          <div class="ann-meta">
+            ${a.is_pinned ? `<span class="ann-badge pinned-badge">📌 Pinned</span>` : ""}
+            <span class="ann-badge cat">${esc(CATEGORY_LABELS[a.category] || a.category || "general")}</span>
+            <span class="ann-date">${fmtAnnDate(a.published_at || a.created_at)}</span>
+          </div>
+          <h3 class="ann-title" style="font-size:16px">${esc(a.title)}</h3>
+          <p class="ann-body" style="font-size:13px">${esc(a.body.slice(0, 200))}${a.body.length > 200 ? "…" : ""}</p>
+        </article>`).join("");
+    } catch (_) {}
+  }
+}
+
+/* ============================================================
+   SUBSCRIBER FORM (index.html)
+   ============================================================ */
+
+function setupSubscribeForm() {
+  const form = $("#subscribe-form");
+  if (!form || !window.DataService) return;
+
+  const statusEl = $("#sub-status");
+
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const email = $("#sub-email").value.trim();
+    if (!email || !email.includes("@")) {
+      if (statusEl) { statusEl.style.color = "#ef4444"; statusEl.textContent = "Please enter a valid email address."; }
+      return;
+    }
+    const btn = form.querySelector("button[type=submit]");
+    if (btn) btn.disabled = true;
+    try {
+      await DataService.subscribeEmail(email);
+      if (statusEl) { statusEl.style.color = "#22c55e"; statusEl.textContent = "✓ You're subscribed! We'll keep you updated."; }
+      form.reset();
+    } catch (err) {
+      if (statusEl) {
+        statusEl.style.color = err.message && err.message.includes("already") ? "#2ee6d6" : "#ef4444";
+        statusEl.textContent = err.message && err.message.includes("already")
+          ? "✓ You're already subscribed."
+          : "Could not subscribe. Please try again.";
+      }
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  });
 }

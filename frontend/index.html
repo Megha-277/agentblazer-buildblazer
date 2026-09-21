@@ -78,6 +78,7 @@
       <a href="about.html">About Us</a>
       <a href="events.html">Events &amp; Workshops</a>
       <a href="team.html">Our Team</a>
+      <a href="announcements.html">Announcements</a>
       <a href="contact.html">Join / Contact</a>
     </nav>
 
@@ -165,6 +166,37 @@
   </div>
 </section>
 
+<!-- ANNOUNCEMENTS STRIP -->
+<section class="wrap pad" id="announcements-strip" aria-label="Latest announcements">
+  <div class="sec-h">
+    <i class="bar"></i>
+    <h2>Announcements <em>&amp; Notices</em></h2>
+    <a href="announcements.html" class="aside">View all →</a>
+  </div>
+  <div id="homepage-announcements" class="ann-strip">
+    <!-- Dynamically populated by script.js via DataService.getAnnouncements() -->
+  </div>
+</section>
+
+<!-- EMAIL SUBSCRIPTION -->
+<section class="wrap" style="padding-bottom:clamp(48px,6vw,80px)">
+  <div class="glass tilt" style="border-radius:16px;padding:clamp(24px,4vw,48px);text-align:center;max-width:560px;margin:0 auto">
+    <span class="eyebrow" style="justify-content:center"><i class="dot"></i>Stay updated</span>
+    <h2 style="margin:14px 0 8px;font-size:clamp(20px,3vw,28px)">Get club updates <em>by email</em></h2>
+    <p style="color:var(--ink-3);font-size:14px;margin-bottom:20px">Workshops, competitions, achievements — straight to your inbox.</p>
+    <form id="subscribe-form" novalidate style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+      <input id="sub-email" type="email" placeholder="your@email.com" required maxlength="254"
+             style="flex:1;min-width:220px;padding:11px 16px;border-radius:8px;border:1px solid rgba(255,255,255,.15);
+                    background:rgba(255,255,255,.06);color:var(--ink-1);font-size:14px;outline:none">
+      <button type="submit" class="btn btn-1" style="white-space:nowrap">Subscribe
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+      </button>
+    </form>
+    <p id="sub-status" style="margin:12px 0 0;font-size:13px;min-height:18px" aria-live="polite"></p>
+  </div>
+</section>
+
 </main>
 
 <!-- ============ FOOTER ============ -->
@@ -195,7 +227,7 @@
           <li><a href="events.html">Workshops &amp; Contests</a></li>
           <li><a href="team.html">Leadership &amp; Core Team</a></li>
           <li><a href="contact.html">Membership &amp; Enquiries</a></li>
-          <li><a href="login.html">Club Admin Sign-in</a></li>
+          <li><a href="announcements.html">Announcements</a></li>
         </ul>
       </div>
       <div class="foot-col">

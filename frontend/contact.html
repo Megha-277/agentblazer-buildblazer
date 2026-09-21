@@ -69,6 +69,7 @@
       <a href="about.html">About Us</a>
       <a href="events.html">Events &amp; Workshops</a>
       <a href="team.html">Our Team</a>
+      <a href="announcements.html">Announcements</a>
       <a href="contact.html" class="on"><i class="pip"></i>Join / Contact</a>
     </nav>
 
@@ -92,91 +93,14 @@
           <defs><linearGradient id="jg" x1="3" y1="2" x2="21" y2="22"><stop stop-color="#2ee6d6"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs>
         </svg>
       </div>
-      <span class="eyebrow"><i class="dot"></i>Membership Intake &amp; Inquiries · Academic Year 2025–2026</span>
+      <span class="eyebrow"><i class="dot"></i>Join &amp; Contact · Academic Year 2025–2026</span>
       <h1 class="display">Ready to Build with<span class="it inline"> Autonomous Intelligence?</span></h1>
-      <p class="lede">Join the AgentBlazer Club at SJEC CSE. Collaborate with peers, gain hands-on access to Salesforce Trailhead developer orgs, and shape real AI agent projects.</p>
+      <p class="lede">Members are invited directly by the club leadership each academic year. Reach out via the contact form below for general enquiries, workshop interest, or partnership proposals.</p>
 
-      <!-- Workflow Switcher Tabs -->
-      <div class="dual-tabs" role="tablist">
-        <button class="on" id="tab-signup" type="button" role="tab" aria-selected="true">Student Membership Intake</button>
-        <button id="tab-status" type="button" role="tab" aria-selected="false">Check Application Status</button>
-        <button id="tab-contact" type="button" role="tab" aria-selected="false">Contact CSE Department</button>
-      </div>
-
-      <!-- WORKFLOW 1: STUDENT MEMBERSHIP INTAKE FORM -->
-      <div class="form-card glass" id="box-signup" style="width:100%">
+      <!-- CONTACT FORM ONLY (application flow removed — Part A §3) -->
+      <div class="form-card glass" id="box-contact" style="width:100%">
         <div style="text-align:left;margin-bottom:18px">
-          <h2 style="font-size:22px;font-weight:700">Student Membership Application</h2>
-          <p style="font-size:13.5px;color:var(--ink-3);margin-top:4px">
-            Exclusive to St Joseph Engineering College students. Institutional <strong style="color:var(--a1)">@sjec.ac.in</strong> email is mandatory.
-          </p>
-        </div>
-
-        <form id="signup-form" autocomplete="off" novalidate>
-          <!-- Honeypot protection field -->
-          <input type="text" name="b_hp_check" id="signup-hp" class="hp-field" tabindex="-1" autocomplete="off">
-
-          <div class="form-grid two-col">
-            <div class="form-field full-width">
-              <label for="reg-name">Full Name *</label>
-              <input type="text" id="reg-name" name="full_name" placeholder="e.g. Alex D'Souza" required maxlength="100">
-            </div>
-
-            <div class="form-field full-width">
-              <label for="reg-email">SJEC Institutional Email *</label>
-              <input type="email" id="reg-email" name="email" placeholder="e.g. 26d89.alex@sjec.ac.in" required maxlength="120">
-              <span class="help-text">Must be an institutional address ending with <code>@sjec.ac.in</code>.</span>
-            </div>
-
-            <div class="form-field">
-              <label for="reg-batch">Expected Graduation Year</label>
-              <input type="number" id="reg-batch" name="expected_graduation_year" min="2025" max="2035" placeholder="Auto-calculated (e.g. 2030)">
-              <span class="help-text" id="batch-hint">Auto-parsed from email format (e.g. 26... &rarr; 2030)</span>
-            </div>
-
-            <div class="form-field">
-              <label for="reg-password">Create Account Password *</label>
-              <input type="password" id="reg-password" name="password" minlength="8" placeholder="At least 8 characters" required>
-            </div>
-          </div>
-
-          <div class="form-status" id="signup-status" role="alert"></div>
-
-          <button type="submit" class="btn btn-1" id="signup-btn" style="margin-top:24px;width:100%;justify-content:center">
-            Submit Membership Application
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
-          </button>
-        </form>
-      </div>
-
-      <!-- WORKFLOW 2: CHECK APPLICATION STATUS FORM -->
-      <div class="form-card glass" id="box-status" style="width:100%;display:none">
-        <div style="text-align:left;margin-bottom:18px">
-          <h2 style="font-size:22px;font-weight:700">Check Membership Application Status</h2>
-          <p style="font-size:13.5px;color:var(--ink-3);margin-top:4px">
-            Track your registration approval progress. Enter your registered <strong style="color:var(--a1)">@sjec.ac.in</strong> email address below.
-          </p>
-        </div>
-
-        <form id="status-form" autocomplete="off" novalidate>
-          <div class="form-field full-width">
-            <label for="check-email">SJEC Institutional Email *</label>
-            <input type="email" id="check-email" name="email" placeholder="e.g. 26d89.alex@sjec.ac.in" required maxlength="120">
-          </div>
-
-          <div class="form-status" id="check-status-box" role="alert" style="margin-top:14px"></div>
-
-          <button type="submit" class="btn btn-1" id="check-btn" style="margin-top:20px;width:100%;justify-content:center">
-            Check Live Application Status
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
-          </button>
-        </form>
-      </div>
-
-      <!-- WORKFLOW 3: CONTACT CSE DEPARTMENT FORM -->
-      <div class="form-card glass" id="box-contact" style="width:100%;display:none">
-        <div style="text-align:left;margin-bottom:18px">
-          <h2 style="font-size:22px;font-weight:700">General Enquiry &amp; Mentorship Outreach</h2>
+          <h2 style="font-size:22px;font-weight:700">General Enquiry &amp; Outreach</h2>
           <p style="font-size:13.5px;color:var(--ink-3);margin-top:4px">
             Reach out to our faculty coordinators and student officers regarding workshops, guest sessions, or industry collaborations.
           </p>
@@ -258,7 +182,7 @@
           <li><a href="events.html">Workshops &amp; Contests</a></li>
           <li><a href="team.html">Leadership &amp; Core Team</a></li>
           <li><a href="contact.html">Membership &amp; Enquiries</a></li>
-          <li><a href="login.html">Club Admin Sign-in</a></li>
+          <li><a href="announcements.html">Announcements</a></li>
         </ul>
       </div>
       <div class="foot-col">

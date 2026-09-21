@@ -1,7 +1,8 @@
-fastapi
-uvicorn[standard]
-slowapi
-python-dotenv
-supabase
-pydantic[email]
-python-multipart
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+slowapi==0.1.9
+python-dotenv==1.0.1
+supabase==2.5.0
+pydantic[email]==2.7.1
+python-multipart==0.0.9
+openpyxl==3.1.2

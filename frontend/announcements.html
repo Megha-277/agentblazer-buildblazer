@@ -3,41 +3,45 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Workshops, Contests &amp; Masterclasses — AgentBlazer Club | SJEC CSE</title>
-<meta name="description" content="Discover hands-on workshops, algorithmic hackathons, and autonomous agent masterclasses organized by AgentBlazer Club at SJEC CSE.">
-<meta name="keywords" content="AgentBlazer Events, Hackathons SJEC, CSE Workshops, Prompt Ops, Agentforce Deep Dive, St Joseph Engineering College">
+<title>Announcements — AgentBlazer Club | SJEC CSE</title>
+<meta name="description" content="Latest announcements, competition results, workshop registrations, and notices from AgentBlazer Club at SJEC CSE.">
 <meta name="author" content="Department of Computer Science &amp; Engineering, SJEC">
-<link rel="canonical" href="events.html">
-
-<!-- OpenGraph / Social Meta -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="Workshops, Contests &amp; Masterclasses — AgentBlazer Club | SJEC CSE">
-<meta property="og:description" content="Hands-on technical deep dives, algorithmic challenges, and real-world system deployments with seasoned engineers.">
-<meta property="og:url" content="events.html">
+<meta property="og:title" content="Announcements — AgentBlazer Club | SJEC CSE">
+<meta property="og:description" content="Competition results, workshop registrations, achievements and notices from AgentBlazer Club.">
 <meta property="og:image" content="assets/logo.png">
-
-<!-- Twitter Card Meta -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Workshops &amp; Contests — AgentBlazer Club | SJEC CSE">
-<meta name="twitter:description" content="Hands-on technical deep dives and algorithmic challenges at St Joseph Engineering College, Mangaluru.">
-<meta name="twitter:image" content="assets/logo.png">
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:ital,wght@0,500;0,600;1,400;1,500;1,600&display=swap" rel="stylesheet">
 <link rel="icon" href="assets/logo-mark.png" type="image/png">
 <link rel="stylesheet" href="style.css">
+<style>
+  .ann-grid { display:grid; gap:clamp(16px,2.5vw,24px); margin-top:clamp(24px,4vw,40px); }
+  .ann-card { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09); border-radius:14px;
+               padding:clamp(18px,3vw,28px); transition:border-color .2s,transform .2s; }
+  .ann-card:hover { border-color:rgba(168,85,247,.4); transform:translateY(-2px); }
+  .ann-card.pinned { border-color:rgba(46,230,214,.35); }
+  .ann-meta { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+  .ann-badge { font-size:11px; font-weight:700; letter-spacing:.6px; text-transform:uppercase;
+                padding:3px 10px; border-radius:20px; }
+  .ann-badge.pinned-badge { background:rgba(46,230,214,.15); color:#2ee6d6; border:1px solid rgba(46,230,214,.3); }
+  .ann-badge.cat { background:rgba(255,255,255,.07); color:var(--ink-3); }
+  .ann-date { font-size:12px; color:var(--ink-4); margin-left:auto; }
+  .ann-title { font-size:clamp(17px,2.5vw,20px); font-weight:700; color:var(--ink-1); margin:0 0 10px; }
+  .ann-body { font-size:14px; color:var(--ink-3); line-height:1.7; white-space:pre-wrap; }
+  .ann-filter { display:flex; gap:8px; flex-wrap:wrap; margin-top:20px; }
+  .ann-filter button { font-size:12px; padding:5px 14px; border-radius:20px; border:1px solid rgba(255,255,255,.15);
+                        background:transparent; color:var(--ink-3); cursor:pointer; transition:.15s; }
+  .ann-filter button:hover, .ann-filter button.on { background:rgba(168,85,247,.2); border-color:rgba(168,85,247,.5); color:var(--ink-1); }
+</style>
 </head>
 <body>
 
-<!-- ============ AMBIENT ============ -->
 <div class="ambient" aria-hidden="true"></div>
 <canvas id="stars" aria-hidden="true"></canvas>
-<canvas id="trail" aria-hidden="true"></canvas>
 <div class="cur-ring" aria-hidden="true"></div>
 <div class="cur-dot" aria-hidden="true"></div>
 
-<!-- ============ APP ============ -->
 <div id="app" class="on">
 
 <header class="hdr">
@@ -59,20 +63,17 @@
         <span class="brand-sub">Department of Computer Science &amp; Engineering</span>
       </span>
     </a>
-
     <button class="burger" id="burger" aria-label="Toggle navigation" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
-
     <nav class="nav" id="nav" aria-label="Primary">
       <a href="index.html">Home</a>
       <a href="about.html">About Us</a>
-      <a href="events.html" class="on"><i class="pip"></i>Events &amp; Workshops</a>
+      <a href="events.html">Events &amp; Workshops</a>
       <a href="team.html">Our Team</a>
-      <a href="announcements.html">Announcements</a>
+      <a href="announcements.html" class="on"><i class="pip"></i>Announcements</a>
       <a href="contact.html">Join / Contact</a>
     </nav>
-
     <div class="themes" role="group" aria-label="Colour theme">
       <button class="on" data-theme="violet" aria-pressed="true"><i>⚡</i><span>Violet</span></button>
       <button data-theme="inferno" aria-pressed="false"><i>🔥</i><span>Inferno</span></button>
@@ -84,40 +85,31 @@
 <main class="page-view">
   <div class="wrap pad">
     <div class="ev-head">
-      <span class="eyebrow up"><i class="dot"></i>Workshops &amp; live sessions · Academic Year 2025–2026</span>
-      <h1 class="display">Workshops, Contests<span class="it inline"> &amp; Masterclasses</span></h1>
-      <p class="lede">Hands-on technical deep dives, algorithmic challenges, and real-world system deployments with seasoned engineers. All events fetched dynamically from the database.</p>
+      <span class="eyebrow up"><i class="dot"></i>Official notices &amp; updates · AgentBlazer Club</span>
+      <h1 class="display">Announcements <span class="it inline">&amp; Notices</span></h1>
+      <p class="lede">Competition results, workshop registrations, achievements, and official club communications.</p>
     </div>
 
-    <!-- Dynamic Events Grid -->
-    <div class="events" id="events">
-      <!-- Dynamically populated from Supabase via DataService -->
+    <!-- Category filter -->
+    <div class="ann-filter" id="ann-filter" role="group" aria-label="Filter by category">
+      <button class="on" data-cat="all">All</button>
+      <button data-cat="competition">Competition</button>
+      <button data-cat="registration">Registration</button>
+      <button data-cat="workshop">Workshop</button>
+      <button data-cat="achievement">Achievement</button>
+      <button data-cat="notice">Notice</button>
+      <button data-cat="general">General</button>
     </div>
 
-    <!-- Curricular Program Outcomes -->
-    <div class="po glass" style="margin-top:clamp(40px,5vw,70px)">
-      <div class="po-lead">
-        <b>Curricular integration</b>
-        <h3>Program Outcomes Mapping</h3>
-        <p>Alignment with college engineering competencies and NBA accreditation criteria.</p>
-      </div>
-      <div class="po-item">
-        <b>PO4 &amp; PO5 · Modern Tool Usage</b>
-        <p>Complex algorithmic problem analysis with modern toolkits (Groq, Agentforce, LLaMA, LangChain).</p>
-      </div>
-      <div class="po-item">
-        <b>PO6 &amp; PO7 · Societal Context</b>
-        <p>Ethical implications, data privacy, and responsible deployment of LLM and SecOps frameworks.</p>
-      </div>
-      <div class="po-item">
-        <b>PO8 &amp; PO11 · Ethics &amp; Project Management</b>
-        <p>Collaborative team execution, code hygiene, open-source PR reviews, and competitive event governance.</p>
+    <div class="ann-grid" id="ann-list" aria-live="polite">
+      <div class="a-empty" style="grid-column:1/-1">
+        <b>Loading announcements…</b>
       </div>
     </div>
   </div>
 </main>
 
-<!-- ============ FOOTER ============ -->
+<!-- FOOTER -->
 <footer>
   <div class="wrap">
     <div class="foot">
@@ -145,7 +137,7 @@
           <li><a href="events.html">Workshops &amp; Contests</a></li>
           <li><a href="team.html">Leadership &amp; Core Team</a></li>
           <li><a href="contact.html">Membership &amp; Enquiries</a></li>
-          
+          <li><a href="announcements.html">Announcements</a></li>
         </ul>
       </div>
       <div class="foot-col">
@@ -155,7 +147,7 @@
           <span class="chip c1">Agentforce</span>
           <span class="chip c2">Trailblazer</span>
         </div>
-        <p class="foot-note">Empowered by faculty guidance and student leadership at St Joseph Engineering College.</p>
+        <p class="foot-note">Empowered by faculty guidance and student leadership.</p>
       </div>
     </div>
     <div class="foot-btm">
@@ -166,15 +158,11 @@
 </footer>
 
 </div><!-- /#app -->
-
-<!-- hover popup -->
 <div class="pop" id="pop" aria-hidden="true"></div>
 
-<!-- Scripts -->
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabaseClient.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js" defer></script>
 <script src="data.js" defer></script>
 <script src="dataService.js" defer></script>
 <script src="script.js" defer></script>

@@ -153,52 +153,36 @@
     return await res.json();
   }
 
-  // Submit Member Registration Form
-  async function submitSignup(formPayload) {
-    // 1. Honeypot check
-    if (formPayload.b_hp_check) {
-      throw new Error("Bot registration rejected.");
+
+
+  // Fetch published announcements
+  async function getAnnouncements(pinnedOnly = false) {
+    try {
+      const base = typeof window.API_BASE_URL !== "undefined" ? window.API_BASE_URL : "";
+      const url = `${base}/api/announcements${pinnedOnly ? "?pinned_only=true" : ""}`;
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        return Array.isArray(data) ? data : [];
+      }
+    } catch (err) {
+      console.warn("Announcements fetch failed:", err);
     }
-
-    // 2. Domain check
-    const email = String(formPayload.email || "").trim().toLowerCase();
-    if (!email.endsWith("@sjec.ac.in")) {
-      throw new Error("Registration strictly restricted to institutional @sjec.ac.in emails.");
-    }
-
-    // 3. Post to backend signup endpoint
-    const res = await fetch(`${BASE_URL}/api/signup`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formPayload)
-    });
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || "Registration failed. Please verify your details.");
-    }
-
-    return await res.json();
+    return [];
   }
 
-  // Check Application Status
-  async function checkStatus(email) {
-    const cleanEmail = String(email || "").trim().toLowerCase();
-    if (!cleanEmail.endsWith("@sjec.ac.in")) {
-      throw new Error("Please enter a valid institutional @sjec.ac.in email address.");
-    }
-
-    const res = await fetch(`${BASE_URL}/api/check-status`, {
+  // Subscribe to email updates
+  async function subscribeEmail(email, name = "") {
+    const base = typeof window.API_BASE_URL !== "undefined" ? window.API_BASE_URL : "";
+    const res = await fetch(`${base}/api/subscribers`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: cleanEmail })
+      body: JSON.stringify({ email, name }),
     });
-
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || "Could not check application status.");
+      throw new Error(err.detail || "Subscription failed.");
     }
-
     return await res.json();
   }
 
@@ -207,7 +191,7 @@
     getEvents,
     getTeamMembers,
     submitContact,
-    submitSignup,
-    checkStatus
+    getAnnouncements,
+    subscribeEmail,
   };
 })();
