@@ -39,6 +39,8 @@ try:
 except ImportError:
     OPENPYXL_AVAILABLE = False
 
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.dirname(__file__))
 from email_service import (
     email_configured,
     send_welcome_credentials,
