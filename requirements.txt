@@ -2,6 +2,7 @@ fastapi
 uvicorn
 supabase
 pydantic
+email-validator
 python-dotenv
 requests
 httpx
