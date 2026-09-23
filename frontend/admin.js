@@ -112,6 +112,12 @@
       if (res.ok) {
         const p = await res.json();
         CURRENT_USER = p;
+        console.log("ADMIN PROFILE RECEIVED:", p);
+console.log("ADMIN ROLE LEVEL:", p.role_level);
+console.log("CURRENT_USER AFTER ASSIGNMENT:", CURRENT_USER);
+console.log("CURRENT_USER ROLE LEVEL AFTER ASSIGNMENT:", CURRENT_USER?.role_level);
+
+renderAll();
         $("#who-name").textContent = `${p.full_name || p.email} (${p.role ? p.role.toUpperCase() : "LVL " + p.role_level})`;
         $("#who-ini").textContent = initials(p.full_name || p.email || "AB");
         applyRoleGate();
