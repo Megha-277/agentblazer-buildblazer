@@ -4,10 +4,12 @@
 -- ============================================================
 
 -- ----------------------------------------------------------------
--- HELPER: current_role_level() — security definer so policies can
--- call it without recursing into the profiles table themselves.
--- Re-create here so it definitely exists before policies reference it.
+-- HELPER FUNCTIONS
+-- Explicitly dropping with CASCADE first allows changing return types 
+-- or signatures without triggering PostgreSQL error 42P13 or 3BP01.
 -- ----------------------------------------------------------------
+DROP FUNCTION IF EXISTS public.current_role_level() CASCADE;
+
 CREATE OR REPLACE FUNCTION public.current_role_level()
 RETURNS INTEGER LANGUAGE sql SECURITY DEFINER STABLE
 SET search_path = public AS $$
@@ -16,6 +18,8 @@ SET search_path = public AS $$
     0
   );
 $$;
+
+DROP FUNCTION IF EXISTS public.current_role() CASCADE;
 
 CREATE OR REPLACE FUNCTION public.current_role()
 RETURNS TEXT LANGUAGE sql SECURITY DEFINER STABLE
@@ -27,11 +31,7 @@ SET search_path = public AS $$
 $$;
 
 -- ================================================================
--- TEAM_MEMBERS  — KEY CHANGE FROM EXISTING SCHEMA
--- Previously: role_level >= 3 (secretary and above)
--- NOW:        role_level >= 2 (event_manager and above)
--- Reason: Part A §5 explicitly grants Event Manager write access
---         to the public-facing members section.
+-- TEAM_MEMBERS
 -- ================================================================
 ALTER TABLE public.team_members ENABLE ROW LEVEL SECURITY;
 
@@ -39,6 +39,8 @@ DROP POLICY IF EXISTS "Officers can manage team members" ON public.team_members;
 DROP POLICY IF EXISTS "team_write_senior"                ON public.team_members;
 DROP POLICY IF EXISTS "team_update_secretary"            ON public.team_members;
 DROP POLICY IF EXISTS "Public can view active team"      ON public.team_members;
+DROP POLICY IF EXISTS "team_select_public"               ON public.team_members;
+DROP POLICY IF EXISTS "team_write_event_manager_and_above" ON public.team_members;
 
 CREATE POLICY "team_select_public"
   ON public.team_members FOR SELECT
@@ -55,6 +57,9 @@ CREATE POLICY "team_write_event_manager_and_above"
 -- ANNOUNCEMENTS
 -- ================================================================
 ALTER TABLE public.announcements ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "announcements_select_public" ON public.announcements;
+DROP POLICY IF EXISTS "announcements_write"         ON public.announcements;
 
 -- Public: only published announcements
 CREATE POLICY "announcements_select_public"
@@ -75,6 +80,10 @@ CREATE POLICY "announcements_write"
 -- SUBSCRIBERS
 -- ================================================================
 ALTER TABLE public.subscribers ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "subscribers_insert_public" ON public.subscribers;
+DROP POLICY IF EXISTS "subscribers_select_staff"  ON public.subscribers;
+DROP POLICY IF EXISTS "subscribers_update_staff"  ON public.subscribers;
 
 -- Anyone can subscribe (public insert)
 CREATE POLICY "subscribers_insert_public"
@@ -98,6 +107,11 @@ CREATE POLICY "subscribers_update_staff"
 -- DISCUSSION_THREADS
 -- ================================================================
 ALTER TABLE public.discussion_threads ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "threads_select_members"     ON public.discussion_threads;
+DROP POLICY IF EXISTS "threads_insert_members"     ON public.discussion_threads;
+DROP POLICY IF EXISTS "threads_update_own_or_staff" ON public.discussion_threads;
+DROP POLICY IF EXISTS "threads_delete_staff"       ON public.discussion_threads;
 
 -- All active members (level >= 0) can read threads
 CREATE POLICY "threads_select_members"
@@ -138,6 +152,11 @@ CREATE POLICY "threads_delete_staff"
 -- ================================================================
 ALTER TABLE public.discussion_replies ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "replies_select_members"     ON public.discussion_replies;
+DROP POLICY IF EXISTS "replies_insert_members"     ON public.discussion_replies;
+DROP POLICY IF EXISTS "replies_update_own_or_staff" ON public.discussion_replies;
+DROP POLICY IF EXISTS "replies_delete_own_or_staff" ON public.discussion_replies;
+
 CREATE POLICY "replies_select_members"
   ON public.discussion_replies FOR SELECT
   TO authenticated
@@ -176,6 +195,8 @@ CREATE POLICY "replies_delete_own_or_staff"
 -- ================================================================
 ALTER TABLE public.unread_markers ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "unread_own" ON public.unread_markers;
+
 -- Users can only see/manage their own unread markers
 CREATE POLICY "unread_own"
   ON public.unread_markers FOR ALL
@@ -187,6 +208,8 @@ CREATE POLICY "unread_own"
 -- NOTIFICATION_PREFERENCES
 -- ================================================================
 ALTER TABLE public.notification_preferences ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "notif_prefs_own" ON public.notification_preferences;
 
 -- Users manage their own preferences; staff can read all
 CREATE POLICY "notif_prefs_own"

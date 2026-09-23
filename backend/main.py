@@ -207,6 +207,108 @@ def get_public_team():
     except Exception:
         return []
 
+# ----------------------------------------------------------------
+# Dashboard event write — upsert a single event into the events table.
+# Called by admin.js persist() so public site reflects changes instantly.
+# ----------------------------------------------------------------
+class EventUpsertItem(BaseModel):
+    id: Optional[str] = None
+    title: str
+    event_date: Optional[str] = None
+    kind: Optional[str] = "Workshop"
+    color: Optional[str] = "t1"
+    description: Optional[str] = None
+    tracks: Optional[list] = []
+    note: Optional[str] = None
+    foot: Optional[str] = None
+    hint: Optional[str] = None
+    gallery: Optional[Dict[str, Any]] = None
+    image_url: Optional[str] = None
+    is_published: bool = True
+
+class EventsBulkBody(BaseModel):
+    events: List[EventUpsertItem]
+
+@app.post("/api/events/sync")
+@limiter.limit("30/minute")
+def sync_events(request: Request, body: EventsBulkBody, authorization: Optional[str] = Header(default=None)):
+    """Replaces all events in the Supabase events table with the dashboard's current list."""
+    token = parse_auth_header(authorization)
+    require_role(token, 2)  # Event Manager and above
+    admin = get_admin_client()
+    try:
+        # Delete all current events then re-insert in display order
+        # This keeps the order field consistent with the dashboard sort.
+        admin.table("events").delete().neq("id", "00000000-0000-0000-0000-000000000000").execute()
+        rows = []
+        for i, ev in enumerate(body.events):
+            row: Dict[str, Any] = {
+                "title":       sanitize(ev.title, 200),
+                "event_date":  ev.event_date or "",
+                "kind":        sanitize(ev.kind or "Workshop", 100),
+                "color":       ev.color or "t1",
+                "description": sanitize(ev.description or "", 2000),
+                "tracks":      ev.tracks or [],
+                "note":        sanitize(ev.note or "", 500),
+                "foot":        sanitize(ev.foot or "", 200),
+                "hint":        sanitize(ev.hint or "", 200),
+                "gallery":     ev.gallery or {},
+                "image_url":   ev.image_url or "",
+                "is_published": ev.is_published,
+            }
+            rows.append(row)
+        if rows:
+            admin.table("events").insert(rows).execute()
+        return {"status": "synced", "count": len(rows)}
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Event sync failed: {exc}")
+
+# ----------------------------------------------------------------
+# Dashboard team write — syncs officers/faculty/committee/guests
+# into the team_members table so the public site stays current.
+# ----------------------------------------------------------------
+class TeamMemberItem(BaseModel):
+    name: str
+    role_title: Optional[str] = None
+    badge: Optional[str] = None
+    category: str  # 'officer','faculty','committee','guest'
+    bio: Optional[str] = None
+    photo_url: Optional[str] = None
+    color: Optional[str] = "t1"
+    display_order: int = 0
+    is_active: bool = True
+
+class TeamBulkBody(BaseModel):
+    members: List[TeamMemberItem]
+
+@app.post("/api/team/sync")
+@limiter.limit("30/minute")
+def sync_team(request: Request, body: TeamBulkBody, authorization: Optional[str] = Header(default=None)):
+    """Replaces team_members table with the dashboard's current list."""
+    token = parse_auth_header(authorization)
+    require_role(token, 2)  # Event Manager and above
+    admin = get_admin_client()
+    try:
+        admin.table("team_members").delete().neq("id", "00000000-0000-0000-0000-000000000000").execute()
+        rows = []
+        for m in body.members:
+            rows.append({
+                "name":          sanitize(m.name, 150),
+                "role_title":    sanitize(m.role_title or "", 200),
+                "badge":         sanitize(m.badge or "", 100),
+                "category":      m.category,
+                "bio":           sanitize(m.bio or "", 1000),
+                "photo_url":     m.photo_url or "",
+                "color":         m.color or "t1",
+                "display_order": m.display_order,
+                "is_active":     m.is_active,
+            })
+        if rows:
+            admin.table("team_members").insert(rows).execute()
+        return {"status": "synced", "count": len(rows)}
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Team sync failed: {exc}")
+
 # Legacy single-payload content compatibility
 @app.get("/api/content")
 def get_content():

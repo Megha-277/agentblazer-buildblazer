@@ -225,11 +225,60 @@
     renderAll();
     toast(msg);
     var token = getToken();
-    if (token && CURRENT_USER.role_level >= 2) {
-      try {
-        await fetch(BASE+"/api/content",{method:"POST",headers:authHdr(),body:JSON.stringify(data)});
-      } catch (_) {}
-    }
+    if (!token || CURRENT_USER.role_level < 2) return;
+
+    // 1. Legacy single-payload (for backwards compat)
+    try {
+      await fetch(BASE+"/api/content",{method:"POST",headers:authHdr(),body:JSON.stringify(data)});
+    } catch (_) {}
+
+    // 2. Sync events → Supabase events table (public site reads from here)
+    try {
+      var eventRows = (data.events||[]).map(function(e) {
+        return {
+          title:       e.title||"",
+          event_date:  e.date||"",
+          kind:        e.kind||"Workshop",
+          color:       e.color||"t1",
+          description: e.desc||"",
+          tracks:      Array.isArray(e.tracks)?e.tracks:[],
+          note:        e.note||"",
+          foot:        e.foot||"",
+          hint:        e.hint||"",
+          gallery:     e.gallery||{},
+          image_url:   (e.gallery&&e.gallery.images&&e.gallery.images[0])||"",
+          is_published:true
+        };
+      });
+      await fetch(BASE+"/api/events/sync",{method:"POST",headers:authHdr(),body:JSON.stringify({events:eventRows})});
+    } catch(err){ console.warn("Events sync failed:",err.message); }
+
+    // 3. Sync team_members → Supabase team_members table (public site reads from here)
+    try {
+      var teamRows = [];
+      var order = 0;
+      // guests
+      (data.guests||[]).forEach(function(g){
+        teamRows.push({name:g.name||"",role_title:g.left||"",badge:g.right||"",category:"guest",
+          bio:g.org||"",photo_url:"",color:g.color||"t1",display_order:order++,is_active:true});
+      });
+      // faculty
+      (data.faculty||[]).forEach(function(f){
+        teamRows.push({name:f.name||"",role_title:f.role||"",badge:"",category:"faculty",
+          bio:"",photo_url:f.photo||"",color:"t1",display_order:order++,is_active:true});
+      });
+      // officers
+      (data.officers||[]).forEach(function(o){
+        teamRows.push({name:o.name||"",role_title:o.role||"",badge:o.badge||"",category:"officer",
+          bio:o.desc||"",photo_url:o.photo||"",color:o.color||"t2",display_order:order++,is_active:true});
+      });
+      // committee
+      (data.committee||[]).forEach(function(c){
+        teamRows.push({name:c.name||"",role_title:c.role||"",badge:"",category:"committee",
+          bio:"",photo_url:"",color:"t1",display_order:order++,is_active:true});
+      });
+      await fetch(BASE+"/api/team/sync",{method:"POST",headers:authHdr(),body:JSON.stringify({members:teamRows})});
+    } catch(err){ console.warn("Team sync failed:",err.message); }
   }
 
   function rowHTML(sec, it, i, total) {
@@ -322,11 +371,59 @@
     $$(".upload-btn",sheetBody).forEach(btn=>{
       btn.addEventListener("click",()=>{ uploadTargetId=btn.dataset.uploadTarget; $("#image-upload-input").click(); });
     });
+    showExistingPreviews();
     scrim.classList.add("on"); sheet.classList.add("on");
     var first=sheetBody.querySelector("input[type=text],textarea"); if(first) setTimeout(()=>first.focus(),100);
   }
 
   function closeEditor(){ scrim.classList.remove("on"); sheet.classList.remove("on"); editing={sec:null,index:null,draft:null}; }
+
+  /* ─── Image preview helpers ─────────────────────────────── */
+  function showUploadPreview(inputId, url) {
+    if (!url) return;
+    var wrap = $(`#${inputId}`)?.closest(".f");
+    if (!wrap) return;
+    var existing = wrap.querySelector(".img-preview-single");
+    if (existing) existing.remove();
+    var preview = document.createElement("div");
+    preview.className = "img-preview-single";
+    preview.style.cssText = "margin-top:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;";
+    preview.innerHTML = `<img src="${esc(url)}" alt="Preview"
+      style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,.15);"
+      onerror="this.style.display='none'">
+      <span style="font-size:11px;color:var(--ink-4);word-break:break-all;max-width:220px">${esc(url.split("/").pop())}</span>`;
+    wrap.appendChild(preview);
+  }
+
+  function showUploadPreviews(textareaId, urls) {
+    if (!urls || !urls.length) return;
+    var wrap = $(`#${textareaId}`)?.closest(".f");
+    if (!wrap) return;
+    var existing = wrap.querySelector(".img-preview-strip");
+    if (existing) existing.remove();
+    var strip = document.createElement("div");
+    strip.className = "img-preview-strip";
+    strip.style.cssText = "margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;";
+    strip.innerHTML = urls.filter(Boolean).map(url =>
+      `<img src="${esc(url)}" alt="Gallery image"
+        style="width:64px;height:64px;object-fit:cover;border-radius:6px;border:1px solid rgba(255,255,255,.15);"
+        onerror="this.style.display='none'">`
+    ).join("");
+    wrap.appendChild(strip);
+  }
+
+  // Show existing photos when editor opens
+  function showExistingPreviews() {
+    $$("[data-k]", sheetBody).forEach(function(el) {
+      if (el.tagName.toLowerCase() === "input" && el.dataset.k === "photo" && el.value) {
+        showUploadPreview(el.id, el.value);
+      }
+      if (el.tagName.toLowerCase() === "textarea" && el.dataset.list && el.dataset.max) {
+        var lines = el.value.split("\n").map(x=>x.trim()).filter(Boolean);
+        if (lines.length) showUploadPreviews(el.id, lines);
+      }
+    });
+  }
 
   /* Image upload */
   var fileInput=$("#image-upload-input");
@@ -346,8 +443,16 @@
           if(target.tagName.toLowerCase()==="textarea"){
             var lines=target.value.trim()?target.value.trim().split("\n").map(x=>x.trim()).filter(Boolean):[];
             if(lines.length>=10){ alert("Max 10 gallery images."); }
-            else{ lines.push(d.url); target.value=lines.join("\n"); }
-          } else { target.value=d.url; }
+            else{
+              lines.push(d.url); target.value=lines.join("\n");
+              // Show thumbnail strip below the textarea
+              showUploadPreviews(target.id, lines);
+            }
+          } else {
+            target.value=d.url;
+            // Show single thumbnail below the input
+            showUploadPreview(target.id, d.url);
+          }
         }
         toast("Image uploaded!");
       }catch(err){ alert("Upload error: "+err.message); }
@@ -599,7 +704,33 @@
 
   /* Invite panel */
   var invPanel=$("#invite-panel"),invBtn=$("#btn-invite-member"),invCancel=$("#btn-invite-cancel");
-  if(invBtn)    invBtn.addEventListener("click",()=>{ if(invPanel){invPanel.style.display="block";invBtn.hidden=true;} });
+  if(invBtn) invBtn.addEventListener("click",()=>{
+    if(invPanel){
+      invPanel.style.display="block";
+      invBtn.hidden=true;
+      // Populate role dropdown based on caller level
+      var roleSelect=$("#inv-role");
+      if(roleSelect){
+        var callerLvl=CURRENT_USER.role_level;
+        var allRoles=[
+          {v:"hod",          l:"HOD (Level 6)",           minLvl:6},
+          {v:"faculty",      l:"Faculty (Level 5)",        minLvl:6},
+          {v:"president",    l:"President (Level 4)",      minLvl:5},
+          {v:"secretary",    l:"Secretary (Level 3)",      minLvl:4},
+          {v:"event_manager",l:"Event Manager (Level 2)",  minLvl:4},
+          {v:"tech_lead",    l:"Tech Lead (Level 1)",      minLvl:4},
+          {v:"member",       l:"Member (Level 0)",         minLvl:3},
+          {v:"alumni",       l:"Alumni (Level 0)",         minLvl:5},
+        ];
+        roleSelect.innerHTML = allRoles
+          .filter(r => callerLvl >= r.minLvl)
+          .map(r => `<option value="${r.v}">${r.l}</option>`)
+          .join("");
+        // Default to member for Secretary, president for Faculty+
+        roleSelect.value = callerLvl >= 5 ? "president" : callerLvl === 4 ? "secretary" : "member";
+      }
+    }
+  });
   if(invCancel) invCancel.addEventListener("click",()=>{ if(invPanel){invPanel.style.display="none";if(invBtn)invBtn.hidden=false;} });
 
   var btnInvSubmit=$("#btn-invite-submit");
